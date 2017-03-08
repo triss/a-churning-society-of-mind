@@ -14,6 +14,7 @@
      - [[#scheduling][Scheduling]]
      - [[#tracking-history-and-performing-actions][Tracking history and performing actions]]
    - [[#whats-next][What's next?]]
+     - [[#do-some-actual-reading][Do some actual reading]]
      - [[#kicking-the-tyres][Kicking the tyres]]
      - [[#spreading-flowcharts-across-the-board][Spreading flowcharts across the board]]
      - [[#re-rerepesentation][Re-rerepesentation]]
@@ -216,6 +217,9 @@ I think it might make sense to keep things as simple as possible at this level a
 *** Tracking history and performing actions 
 
 ** What's next?
+*** Do some actual reading
+What's this blackboard model been used for?
+I know Misztal's work currently but will chase back from there.
 
 *** Kicking the tyres
 **** Simple demos solving Artistic and mathematical goals
