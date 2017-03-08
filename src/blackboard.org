@@ -301,7 +301,7 @@ This probably won't take more than a macro/function or three.
 
 I think the blackboard model could be a wonderful means for doing semi-automatic programming with dynamic algorithms.
 
-Isn't dynamic programming considered genetic programming's down fall?
+Isn't dynamic algorithms considered genetic programming's down fall?
 
 Can we automate the construction of blackboards for solving particular problems?
 
