@@ -247,6 +247,19 @@ I could perform comparative evaluations between flowcharts and converted blackbo
 
 I can make agents that can rerepresent.
 
+I need somewhere for re-reprentation to take place.
+
+FlowWr workflows will be re-represented as Blackboard/Experts and possibly back again.
+We can do any evaluative comparison here.
+
+Whilst it could happen anywhere my re-representation will occur in side the blackboard model. 
+
+Whilst standalone fiddling will be interesting it’s the constant re-representation that’s likely to be most exciting.
+
+Stuff will be re-represeted by experts.
+
+Experts will look to re-represent one another.
+
 *** Creative scheduling
 
 The scheduling reminds me of the way an operating system schedules processes and I might poke about in the literature there re: inspiration for creative scheduling methodologies.
