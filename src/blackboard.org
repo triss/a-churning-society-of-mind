@@ -1,9 +1,9 @@
 #+SETUPFILE: setup.org
 
 * Contents                                                         :toc_3_gh:
- - [[#namespace-a-churning-society-of-mindblackboard][Namespace: a-churning-society-of-mind.blackboard]]
-   - [[#the-blackboard-model][The blackboard model]]
-     - [[#the-data-structure][The data structure]]
+ - [[#the-blackboard-model][The blackboard model]]
+   - [[#the-data-structure][The data structure]]
+     - [[#history][History]]
    - [[#experts][Experts]]
      - [[#pre-conditions][Pre-conditions]]
      - [[#actions][Actions]]
@@ -22,9 +22,10 @@
      - [[#visualisations][Visualisations]]
      - [[#the-blackboard-model-as-a-style-of-programming][The blackboard model as a style of programming]]
      - [[#what-meta-data-is-it-worth-the-agents-having][What meta data is it worth the agents having?]]
+ - [[#namespace-a-churning-society-of-mindblackboard][Namespace: a-churning-society-of-mind.blackboard]]
+   - [[#the-actual-clojure-namespace][The actual Clojure namespace]]
 
-* Namespace: a-churning-society-of-mind.blackboard
-** The blackboard model
+* The blackboard model
 
  Misztal stated that the blackboard model "has a potential to be used in simulating cognitive processes such as creativity." cite:Misztal2014 
 
@@ -43,7 +44,7 @@ But we should allow for forms of creativity other than human, blah blah, bloop b
 
  We probably aren't going to bother stopping either.
 
-*** The data structure
+** The data structure
 
 We're going to implement the black-board as a map. Each item thus requires an identifier. For now a keyword will do. 
 
@@ -58,7 +59,7 @@ But one wonders about the worlds biggest map... That of URL's -> to resources i.
   (s/def :blackboard/id keyword?)
 #+END_SRC
 
-**** History
+*** History
 
  The blackboards history is just a list of tuples containing the expert that performed an action and the state the blackboard was in at that time.
  We might want to keep track of other information like how long it took to perform an experts action in future for richer analysis.
@@ -68,8 +69,8 @@ But one wonders about the worlds biggest map... That of URL's -> to resources i.
     (s/coll-of (s/tuple ::expert ::blackboard)))
 #+END_SRC
 
-***** Histories get long
- Since this history could get extremely large (although no where near as big as your thinking because of Clojure's lovely data sharing types) we should perhaps look at writing some of it to tape/disk/cloud/blockchain when performing updates.
+**** Histories get long
+Since this history could get extremely large (although no where near as big as your thinking because of Clojure's lovely data sharing types) we should perhaps look at writing some of it to tape/disk/cloud/blockchain when performing updates.
 
 ** Experts
    
@@ -112,7 +113,7 @@ They might also change there own priority after performing an action since they 
 
 Here the priority is modelled as a positive number.
 
-#+BEGIN_SRC clojure :noweb-ref expert-action
+#+BEGIN_SRC clojure :noweb-ref expert-priority
   (s/def :expert/priority
     (s/and number? pos?))
 #+END_SRC
@@ -158,8 +159,13 @@ We shall refer to this as stuff.
 
 It has a type description, here implemented using Clojure's SPEC and also a blob of data.
 
-#+BEGIN_SRC clojure :noweb-ref update-blackboard
+#+BEGIN_SRC clojure :noweb-ref stuff
+  (s/def ::stuff
+    (s/keys :req-un [:stuff/type :stuff/data]))
 
+  (s/def :stuff/type s/spec?)
+
+  (s/def :stuff/data any?)
 #+END_SRC
 
 ** Updating the blackboard
@@ -212,6 +218,7 @@ I think it might make sense to keep things as simple as possible at this level a
 ** What's next?
 
 *** Kicking the tyres
+**** Simple demos solving Artistic and mathematical goals
 
 **** Misztal poetry generator
 I'd like to spend a day or two re-implementing Misztal's poetry generator.
@@ -273,3 +280,21 @@ Isn't dynamic programming considered genetic programming's down fall?
 Can we automate the construction of blackboards for solving particular problems?
 
 *** What meta data is it worth the agents having?
+
+* Namespace: a-churning-society-of-mind.blackboard
+** The actual Clojure namespace
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/blackboard.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.blackboard
+    (:require [clojure.spec :as s]))
+
+  <<blackboard>>
+  <<blackboard-history>>
+  <<expert>>
+  <<expert-pre-condition>>
+  <<expert-pre-action>>
+  <<expert-priority>>
+  <<stuff>>
+  <<schedule>>
+  <<update-blackboard>>
+#+END_SRC
