@@ -9,6 +9,7 @@
      - [[#actions][Actions]]
      - [[#priority][Priority]]
      - [[#what-might-experts-do][What might experts do?]]
+   - [[#other-stuff][Other stuff]]
    - [[#updating-the-blackboard][Updating the blackboard]]
      - [[#scheduling][Scheduling]]
      - [[#tracking-history-and-performing-actions][Tracking history and performing actions]]
@@ -17,8 +18,8 @@
      - [[#spreading-flowcharts-across-the-board][Spreading flowcharts across the board]]
      - [[#re-rerepesentation][Re-rerepesentation]]
      - [[#creative-scheduling][Creative scheduling]]
-     - [[#visualisations][Visualisations]]
      - [[#blackboard-as-a-service][Blackboard as a service]]
+     - [[#visualisations][Visualisations]]
      - [[#the-blackboard-model-as-a-style-of-programming][The blackboard model as a style of programming]]
      - [[#what-meta-data-is-it-worth-the-agents-having][What meta data is it worth the agents having?]]
 
@@ -85,7 +86,7 @@ Since they're implemented as maps here they might contain other meta-data as wel
 
 *** Pre-conditions
 
-The first is the pre-condition, it returns true or false dependent on whether or not the blackboard is in a state the expert can operate on.
+The first function is the pre-condition, it returns true or false dependent on whether or not the blackboard is in a state the expert can operate on.
 
 #+BEGIN_SRC clojure :noweb-ref expert-pre-condition
   (s/def :expert/pre-condition
@@ -150,6 +151,17 @@ These blackboards will get large.
 Garbage collection might be sensible.
 Having an agent that just copies the blackboard to a bigger computer would be cooler.
 
+** Other stuff
+
+Expert's operate on items left on the blackboard.
+We shall refer to this as stuff.
+
+It has a type description, here implemented using Clojure's SPEC and also a blob of data.
+
+#+BEGIN_SRC clojure :noweb-ref update-blackboard
+
+#+END_SRC
+
 ** Updating the blackboard
 
 The process of updating the blackboard is straigt-forward.
@@ -202,19 +214,18 @@ I think it might make sense to keep things as simple as possible at this level a
 *** Kicking the tyres
 
 **** Misztal poetry generator
- I'd like to spend a day or two re-implementing Misztal's poetry generator.
+I'd like to spend a day or two re-implementing Misztal's poetry generator.
+This should port straight across. I reckon 3 days work.
+Only interesting bit is moving component of scheduler that ensure variety in the experts that get selected to run will be encoded in expert rather than the scheduler itself.
 
 **** Some sort of picture drawing thingmy
 
-***** Curation
-
-***** Expert re-prioritisation 
-
+Just for the hell of it.
 There should be experts who re-prioritise other experts based on heuristics.
 
 *** Spreading flowcharts across the board
 
-Then we'll look at dumping in a lot of FlowWr's flow charts and see what the impact of that is.
+Assuming we can get them then we'll look at dumping in a lot of FlowWr's flow charts and see what the impact of that is.
 - All that's required is removing pointers from input to output
 - Prioritising the agents in some way (probably by hand)
 
@@ -230,20 +241,22 @@ I can make agents that can rerepresent.
 The scheduling reminds me of the way an operating system schedules processes and I might poke about in the literature there re: inspiration for creative scheduling methodologies.
 Maybe operating systems should be modelled around experts and a blackboard instead of processes and resources?
 
-**** Erlang style parrallelization
+**** Erlang style parrallelisation
 
-Well CSP to be specific. It's an afternoons work.
+Well CSP to be specific. 
 Experts might take a long time to do there job.
 Lets spawn them as processes/actors and handle merging in of there output as and when it's ready.
-
-*** Visualisations
-
-A simple visualisation of blackboard processes unfolding would be nice resource for thesis?
-Maybe a nice web based UI/REPL?
+It's an afternoons work and opens up interesting options.
 
 *** Blackboard as a service
 
-We can make this a web service thingmy
+We can make this a web service thingmy.
+Remote experts should be able to request state of blackboard and that items are added to it.
+This would be easier to build on top of parrallelised model described above.
+
+*** Visualisations
+A simple visualisation of blackboard processes unfolding would be nice resource for thesis?
+Maybe a nice web based UI/REPL?
 
 *** The blackboard model as a style of programming
 
