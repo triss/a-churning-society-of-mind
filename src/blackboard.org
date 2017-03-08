@@ -260,6 +260,14 @@ Stuff will be re-represeted by experts.
 
 Experts will look to re-represent one another.
 
+**** Re-representation agents
+***** markov as NN
+***** function as NN, markov
+***** picture
+****** gp
+****** neural network
+***** between one another
+
 *** Creative scheduling
 
 The scheduling reminds me of the way an operating system schedules processes and I might poke about in the literature there re: inspiration for creative scheduling methodologies.
