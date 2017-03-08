@@ -261,6 +261,7 @@ Stuff will be re-represeted by experts.
 
 Experts will look to re-represent one another.
 
+**** coercion between types will be neccesary
 **** Re-representation agents
 ***** markov as NN
 ***** function as NN, markov
@@ -320,6 +321,8 @@ Recording how long different tasks took to run could lead to interesting develop
 Shortest route for different types of solutions/re-representations.
 
 Scheduling agents could get bored.
+
+
 
 * Namespace: a-churning-society-of-mind.blackboard
 ** The actual Clojure namespace

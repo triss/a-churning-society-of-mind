@@ -1,0 +1,85 @@
+#+SETUPFILE: setup.org
+* Why re-represent?
+
+Concepts can be expressed and encoded in many different ways. 
+We can call this encoding or expression a /representation/.
+
+When thinking about something we might produce a mind map, a list of bullet points, and eventually produce a paper about an idea.
+
+A composer might represent the seasons in a piece of music.
+
+We might take a businesses requirement, formalise it a bit, encode it in UML and produce a program, and a database and install those on computers. 
+This process might occur in a cycle (waterfall) or in some interleaved fashion (agile etc).
+
+We might search papers for co-occurences? of words examine the list produced by the computer, cluster and otherwise manipulate them and develop a deeper understanding of creativity.
+cite:Jordanous1
+
+We might understand the number of people in a room to be a few as we enter it update that understanding to a more solid 5. It might become a few again when discussing the event with a friend over dinner.
+
+A mathematician will take a concept from the natural world and represent it as a formulae. A mathematical journalist might be inspired by this and represent it as a news paper article. 
+
+All cognitive activity appears to eventually be represented as electrical signals in the a top of a biological substrate in the brain and body.
+
+We represent concepts with a variety of media when outside of our body.
+
+If we take a pluralist approach to representation the idea that concepts exist in many differ
+
+** Representation in computing
+
+All software and data is a representation.
+Every piece of code ever written is a representation.
+
+The paths data follow are for the most part one way.
+
+When we write a program we take ideas from our head encode them in one formal language which the computer then translates in to machine code and then runs.
+When we train a machine learning model we represent a concept inside of it.
+
+We do write software that updates our concepts.
+Presents news to us.
+Stock market information.
+A million dashboards for executives around the world.
+But once written it only has one way of expressing these concepts again.
+
+Updating these concepts involves a lot of manual interaction.
+
+A search engine updates it's representation constantly and so does a lot of others!!!!!!
+
+What hardly ever occurs is the reencoding with a different representation. 
+
+If something is encoded in a program it remains that way.
+
+Any translations that occur are the result of human programmed instruction.
+
+We can write functions that rerepresent.
+
+#+BEGIN_SRC clojure :nowebref rerepresent
+  (s/def ::rerepsenter
+    (s/fspec :args (s/cat :m ::representation)
+             :ret ::representation))
+
+  (s/def ::representation (s/keys :req-un [:representation/type :representation/]))
+#+END_SRC
+
+** The representation needs some of its own type information
+
+** an example
+
+Take a function. This is a representation of a concept. e.g. a sine wave, search, web service or an opera.
+
+Represent that function in side a neural network by training one.
+
+Then that inside a markov model.
+
+then in a vector of data and in to a differnt sizewd neurla network and out again.
+
+And then learn a function again using genetic programming.
+
+It easy to see how this could be handcoded.
+
+This above rerepresentation has the form of a pipeline.
+
+* the blackboard as a substrate
+
+the blackboard allows for automated programming of process of the above type to occur with the ordering being explicitly encoded.
+
+
