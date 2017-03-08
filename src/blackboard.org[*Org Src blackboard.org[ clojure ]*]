@@ -1,0 +1,12 @@
+(s/fdef schedule
+        :args (s/cat :blackboard ::blackboard)
+        :ret ::expert)
+
+(defn schedule
+  "Schedules the next expert to run."
+  [blackboard]
+  (->> (vals blackboard)
+       (filter #(s/valid? ::expert %))            ;; and collect up the experts,
+       (filter #((:pre-condition %) blackboard))  ;; filter off those whose pre-condition is fulfilled,
+       (sort-by :priority)                        ;; and sort them by priority
+       (first)))

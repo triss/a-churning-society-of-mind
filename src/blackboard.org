@@ -1,0 +1,262 @@
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#namespace-a-churning-society-of-mindblackboard][Namespace: a-churning-society-of-mind.blackboard]]
+   - [[#the-blackboard-model][The blackboard model]]
+     - [[#the-data-structure][The data structure]]
+   - [[#experts][Experts]]
+     - [[#pre-conditions][Pre-conditions]]
+     - [[#actions][Actions]]
+     - [[#priority][Priority]]
+     - [[#what-might-experts-do][What might experts do?]]
+   - [[#updating-the-blackboard][Updating the blackboard]]
+     - [[#scheduling][Scheduling]]
+     - [[#tracking-history-and-performing-actions][Tracking history and performing actions]]
+   - [[#whats-next][What's next?]]
+     - [[#kicking-the-tyres][Kicking the tyres]]
+     - [[#spreading-flowcharts-across-the-board][Spreading flowcharts across the board]]
+     - [[#re-rerepesentation][Re-rerepesentation]]
+     - [[#creative-scheduling][Creative scheduling]]
+     - [[#visualisations][Visualisations]]
+     - [[#blackboard-as-a-service][Blackboard as a service]]
+     - [[#the-blackboard-model-as-a-style-of-programming][The blackboard model as a style of programming]]
+     - [[#what-meta-data-is-it-worth-the-agents-having][What meta data is it worth the agents having?]]
+
+* Namespace: a-churning-society-of-mind.blackboard
+** The blackboard model
+
+ Misztal stated that the blackboard model "has a potential to be used in simulating cognitive processes such as creativity." cite:Misztal2014 
+
+I'm not 100% on the philosophy, my consciousness doesn't feel like whats described in Global Workspace Theory.
+But we should allow for forms of creativity other than human, blah blah, bloop blooop, and this looks like it could work.
+
+ The blackboard model traditionally solves problems by:
+ - placing experts around a black-board
+ - letting experts take it turns to add and remove items from the blackboard
+   - with a certain priority
+ - stopping when a particular problem is solved.
+
+ Here we modify the model slightly by placing experts on the blackboard such that one day they may modify one another.
+
+ We also keep track of the blackboards history such that experts can use that in there analysis if they require it. 
+
+ We probably aren't going to bother stopping either.
+
+*** The data structure
+
+We're going to implement the black-board as a map. Each item thus requires an identifier. For now a keyword will do. 
+
+But one wonders about the worlds biggest map... That of URL's -> to resources i.e. the internet. The only difference currently is we keep track of the a history... If I used a fancier data structure - like a block-chain, (or indeed the block-chain?), I wouldn't need to track this myself. 
+
+#+BEGIN_SRC clojure :noweb-ref blackboard
+  (s/def ::blackboard                               ;; a blackboard 
+    (s/and (s/map-of :blackboard/id                 ;; is a map of identifiers
+                     (s/or ::expert ::stuff))       ;; to stuff (including experts)
+           (s/keys :req-un [:blackboard/history]))) ;; and it always has a history id
+
+  (s/def :blackboard/id keyword?)
+#+END_SRC
+
+**** History
+
+ The blackboards history is just a list of tuples containing the expert that performed an action and the state the blackboard was in at that time.
+ We might want to keep track of other information like how long it took to perform an experts action in future for richer analysis.
+
+#+BEGIN_SRC clojure :noweb-ref blackboard-history
+  (s/def :blackboard/history
+    (s/coll-of (s/tuple ::expert ::blackboard)))
+#+END_SRC
+
+***** Histories get long
+ Since this history could get extremely large (although no where near as big as your thinking because of Clojure's lovely data sharing types) we should perhaps look at writing some of it to tape/disk/cloud/blockchain when performing updates.
+
+** Experts
+   
+Expert's are simply pairs of functions that operate on the blackboard with a priority.
+
+#+BEGIN_SRC clojure :noweb-ref expert
+  (s/def ::expert
+    (s/keys :req-un [:expert/pre-condition
+                     :expert/action
+                     :expert/priority]))
+#+END_SRC
+
+Since they're implemented as maps here they might contain other meta-data as well. The richer the better.
+
+*** Pre-conditions
+
+The first is the pre-condition, it returns true or false dependent on whether or not the blackboard is in a state the expert can operate on.
+
+#+BEGIN_SRC clojure :noweb-ref expert-pre-condition
+  (s/def :expert/pre-condition
+    (s/fspec :args (s/cat :bb ::blackboard)
+             :ret boolean?))
+#+END_SRC 
+
+*** Actions
+
+The second is the action. This takes the blackboard and returns a new one having performed some operation on it.
+
+#+BEGIN_SRC clojure :noweb-ref expert-action
+  (s/def :expert/action
+    (s/fspec :args (s/cat :bb ::blackboard)
+             :ret ::blackboard))
+#+END_SRC 
+
+*** Priority
+
+The priority an agent has dictates how often it's scheduled.
+Other agents could manipulate an agents priority.
+They might also change there own priority after performing an action since they are also on the blackboard.
+
+Here the priority is modelled as a positive number.
+
+#+BEGIN_SRC clojure :noweb-ref expert-action
+  (s/def :expert/priority
+    (s/and number? pos?))
+#+END_SRC
+
+*** What might experts do?
+
+**** TODO Curation
+
+Action functions can optionally trigger a side-effect for the purposes of curation, perhaps tweeting output that meets constraints, adding data to some repository, or emitting the next track to play in a DJ set.
+
+**** TODO Finding experts
+
+  Finding experts on any particular subject is hard.
+  FloWr's got loads in the form of ProcessNodes, we can wrap those and specify there pre-conditions.  
+  I'm fantasising about finding a big repository of WSDLs and slurping those up but things would be too free to evaluate properly.
+
+Better to stick to modules that are designed for creative activities first.
+Obviously these can be hand crafted as well.
+
+**** TODO Higher order experts
+
+  Experts can be easily chained.
+
+- new pre-condition that ensures all other pre-conditions are fullfilled.
+- new action that either
+  - chains the actions together
+  - or creates whole new blackboard and lets things have a party
+    - perhaps this would require stop function though
+  - schedules/structures them ins some other way
+ 
+Other experts would be responsible for doing this and probably influenced by histories.
+
+**** TODO Garbage collectors
+
+These blackboards will get large.
+Garbage collection might be sensible.
+Having an agent that just copies the blackboard to a bigger computer would be cooler.
+
+** Updating the blackboard
+
+The process of updating the blackboard is straigt-forward.
+We simply find the next expert to run, use it against the blackboard 
+
+#+BEGIN_SRC clojure :noweb-ref update-blackboard
+  (s/fdef update-blackboard
+          :args (s/cat :bb ::blackboard)
+          :ret ::blackboard)
+
+  (defn update-blackboard
+    "Takes a blackboard, finds the next expert to run, applies it's action, and
+    updates the history."
+    [blackboard]
+    (let [{:keys [action] :as expert} (schedule blackboard)]
+      (->> (action blackboard)
+           (assoc :history [expert blackboard]))))
+#+END_SRC
+
+*** Scheduling
+
+Scheduling is handled in a manner similar to Misztal. 
+We don't ensure variety of expert however. Priority manipulation could be performed by experts based on evaluative measures.
+We just sort by priority.
+Here scheduling is handled by a function that takes a blackboard, finds the experts on it whose pre-condition can be filled, sorts them by priority and  
+
+#+BEGIN_SRC clojure :noweb-ref schedule
+  (s/fdef schedule
+          :args (s/cat :blackboard ::blackboard)
+          :ret ::expert)
+
+  (defn schedule
+    "Schedules the next expert to run."
+    [blackboard]
+    (->> (vals blackboard)                          ;; get the values out of the blackboard
+         (filter #(s/valid? ::expert %))            ;; collect up the experts,
+         (filter #((:pre-condition %) blackboard))  ;; filter off those whose pre-condition is fulfilled,
+         (sort-by :priority)                        ;; and sort them by priority
+         (first)))
+#+END_SRC
+
+There are probably a million and one ways to schedule things.
+
+I think it might make sense to keep things as simple as possible at this level and let experts handle scheduling inside system.
+
+*** Tracking history and performing actions 
+
+** What's next?
+
+*** Kicking the tyres
+
+**** Misztal poetry generator
+ I'd like to spend a day or two re-implementing Misztal's poetry generator.
+
+**** Some sort of picture drawing thingmy
+
+***** Curation
+
+***** Expert re-prioritisation 
+
+There should be experts who re-prioritise other experts based on heuristics.
+
+*** Spreading flowcharts across the board
+
+Then we'll look at dumping in a lot of FlowWr's flow charts and see what the impact of that is.
+- All that's required is removing pointers from input to output
+- Prioritising the agents in some way (probably by hand)
+
+I have a feeling at least some of these will have been evaluated.
+I could perform comparative evaluations between flowcharts and converted blackboard equivalents.
+
+*** Re-rerepesentation
+
+I can make agents that can rerepresent.
+
+*** Creative scheduling
+
+The scheduling reminds me of the way an operating system schedules processes and I might poke about in the literature there re: inspiration for creative scheduling methodologies.
+Maybe operating systems should be modelled around experts and a blackboard instead of processes and resources?
+
+**** Erlang style parrallelization
+
+Well CSP to be specific. It's an afternoons work.
+Experts might take a long time to do there job.
+Lets spawn them as processes/actors and handle merging in of there output as and when it's ready.
+
+*** Visualisations
+
+A simple visualisation of blackboard processes unfolding would be nice resource for thesis?
+Maybe a nice web based UI/REPL?
+
+*** Blackboard as a service
+
+We can make this a web service thingmy
+
+*** The blackboard model as a style of programming
+
+Colin stated that this is how he expected object orientated programming to work when he got the wrong end of a stick.
+
+As a mimimum I'll look to write a DSL for writing experts.
+
+This probably won't take more than a macro/function or three.
+
+I think the blackboard model could be a wonderful means for doing semi-automatic programming with dynamic algorithms.
+
+Isn't dynamic programming considered genetic programming's down fall?
+
+Can we automate the construction of blackboards for solving particular problems?
+
+*** What meta data is it worth the agents having?

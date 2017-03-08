@@ -1,0 +1,244 @@
+#+SETUPFILE: src/setup.org
+#+TITLE: a-churning-society-of-mind
+
+FIXME: write description
+
+* Contents                                                         :toc_3_gh:
+ - [[#about-the-project][About the project]]
+     - [[#todo-overview][TODO Overview]]
+     - [[#todo-status][TODO Status]]
+     - [[#todo-example-usage][TODO Example usage]]
+ - [[#namespaces][Namespaces]]
+ - [[#tests][Tests]]
+ - [[#project-definition][Project definition]]
+     - [[#injected-properties][Injected properties]]
+     - [[#dependencies][Dependencies]]
+         - [[#runtime][Runtime]]
+         - [[#development][Development]]
+     - [[#leiningen-coordinates][Leiningen coordinates]]
+     - [[#building-this-project][Building this project]]
+         - [[#testing][Testing]]
+         - [[#working-with-the-repl][Working with the REPL]]
+     - [[#leiningen-project-file][Leiningen project file]]
+     - [[#clojurescript-html-harness][ClojureScript HTML harness]]
+     - [[#accessing-library-version-during-runtime][Accessing library version during runtime]]
+         - [[#version-namespace][Version namespace]]
+     - [[#release-history][Release history]]
+     - [[#contributors][Contributors]]
+     - [[#license][License]]
+
+* About the project
+
+** TODO Overview
+
+FIXME: write description
+
+** TODO Status
+
+ALPHA quality, in active development.
+
+** TODO Example usage
+
+#+BEGIN_SRC clojure
+  (require 'a-churning-society-of-mind.core)
+
+  ;; TODO some magic
+#+END_SRC
+
+* Namespaces
+
+- [[./src/core.org][a-churning-society-of-mind.core]]
+
+* Tests
+
+- [[./test/core.org][a-churning-society-of-mind.test.core]]
+
+* Project definition
+
+** Injected properties                                             :noexport:
+
+#+BEGIN_SRC clojure :exports none :noweb-ref version
+0.1.0-SNAPSHOT
+#+END_SRC
+
+#+BEGIN_SRC clojure :exports none :noweb-ref project-url
+https://github.com/triss/a-churning-society-of-mind
+#+END_SRC
+
+#+BEGIN_SRC clojure :exports none :noweb yes :noweb-ref cljs-artefact-path
+target/a-churning-society-of-mind-<<version>>.js
+#+END_SRC
+
+** Dependencies
+
+*** Runtime
+
+**** [[https://github.com/clojure/clojure][Clojure]]
+#+BEGIN_SRC clojure :noweb-ref dep-clj
+[org.clojure/clojure "1.7.0"]
+#+END_SRC
+
+**** [[https://github.com/clojure/clojurescript][ClojureScript]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljs
+[org.clojure/clojurescript "1.7.107"]
+#+END_SRC
+
+*** Development
+
+**** [[https://github.com/hugoduncan/criterium][Criterium]]
+#+BEGIN_SRC clojure :noweb-ref dep-criterium
+[criterium "0.4.3"]
+#+END_SRC
+
+**** [[https://github.com/cemerick/clojurescript.test][clojurescript.test]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljs-test
+[com.cemerick/clojurescript.test "0.3.3"]
+#+END_SRC
+
+**** [[https://github.com/emezeske/lein-cljsbuild][Cljsbuild]]
+#+BEGIN_SRC clojure :noweb-ref dep-cljsbuild
+[lein-cljsbuild "1.1.0"]
+#+END_SRC
+
+** Leiningen coordinates
+
+#+BEGIN_SRC clojure :noweb yes :noweb-ref lein-coords
+  [a-churning-society-of-mind <<version>>]
+#+END_SRC
+
+** Building this project
+
+This project is written in a literate programming format and requires
+[[https://www.gnu.org/software/emacs/][Emacs]] & [[http://orgmode.org][Org-mode]] to generate usable source code. Assuming both tools
+are installed, the easiest way to generate a working project is via
+command line (make sure =emacs= is on your path or else edit its path
+in =tangle.sh=):
+
+#+BEGIN_SRC bash
+  git clone https://github.com//a-churning-society-of-mind.git
+  cd a-churning-society-of-mind
+  ./tangle.sh src/*.org test/*.org
+#+END_SRC
+
+Tangling is the process of extracting & combining source blocks from
+=.org= files into an actual working project/source tree. Once tangling
+is complete, you can =cd= into the generated project directory
+(=babel=) and then use =lein= as usual.
+
+*** Testing
+
+The =project.clj= file defines an alias to trigger a complete build &
+tests for both CLJ & CLJS versions.
+
+#+BEGIN_SRC bash
+  cd babel
+  lein cleantest
+#+END_SRC
+
+To build the Clojurescript version simply run =lein cljsbuild test=
+from the same directory. A small HTML harness for the resulting JS
+file is also located in that folder (=babel/index.html=), allowing for
+further experimentation in the browser.
+
+*** Working with the REPL
+
+Editing code blocks or files in Org-mode, then re-loading & testing
+changes is quite trivial. Simply launch a REPL (via =lein= or Emacs)
+as usual. Everytime you've made changes to an =.org= file, re-tangle
+it from Emacs (=C-c C-v t=) or =tangle.sh=, then reload the namespace
+in the REPL via =(require 'a-churning-society-of-mind... :reload)= or similar.
+
+** Leiningen project file                                          :noexport:
+
+#+BEGIN_SRC clojure :tangle babel/project.clj :noweb yes :mkdirp yes :padline no
+  (defproject a-churning-society-of-mind "<<version>>"
+    :description  "FIXME: write description"
+    :url          "<<project-url>>"
+    :license      {:name "Eclipse Public License"
+                   :url "http://www.eclipse.org/legal/epl-v10.html"
+                   :distribution :repo}
+    :scm          {:name "git"
+                   :url "https://github.com/"}
+
+    :min-lein-vesion "2.4.0"
+
+    :dependencies [<<dep-clj>>
+                   <<dep-cljs>>]
+
+    :profiles     {:dev {:dependencies [<<dep-criterium>>]
+                         :plugins [<<dep-cljsbuild>>
+                                   <<dep-cljs-test>>]
+                         :global-vars {*warn-on-reflection* true}
+                         :jvm-opts ^:replace []
+                         :aliases {"cleantest" ["do" "clean," "test," "cljsbuild" "test"]}}}
+
+    :cljsbuild    {:builds [{:source-paths ["src" "test"]
+                             :id "dev"
+                             :compiler {:output-to "<<cljs-artefact-path>>"
+                                        :optimizations :whitespace
+                                        :pretty-print true}}
+                            {:source-paths ["src"]
+                             :id "prod"
+                             :compiler {:output-to "<<cljs-artefact-path>>"
+                                        :optimizations :advanced
+                                        :pretty-print false}}]
+                   :test-commands {"unit-tests" ["phantomjs" :runner "<<cljs-artefact-path>>"]}}
+
+    :pom-addition [:developers [:developer
+                                [:name "Tristan Strange"]
+                                [:url ""]
+                                [:timezone "0"]]])
+#+END_SRC
+
+** ClojureScript HTML harness                                      :noexport:
+
+#+BEGIN_SRC html :tangle babel/index.html :noweb yes :mkdirp yes :padline no
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title><<lein-coords>> test</title>
+    </head>
+    <body>
+      <script type="text/javascript" src="<<cljs-artefact-path>>"></script>
+    </body>
+  </html>
+#+END_SRC
+
+** Accessing library version during runtime
+
+The autogenerated namespace =a-churning-society-of-mind.version= contains a single
+symbol =version= holding the version string defined above:
+
+#+BEGIN_SRC clojure :noweb yes
+  (use '[a-churning-society-of-mind.version])
+  
+  (prn version)
+  ; "<<version>>"
+#+END_SRC
+
+*** Version namespace                                              :noexport:
+
+#+BEGIN_SRC clojure :tangle babel/src/a_churning_society_of_mind/version.cljc :noweb yes :mkdirp yes :padline no :exports none
+  (ns a-churning-society-of-mind.version)
+
+  (def version "<<version>>")
+#+END_SRC
+
+** Release history
+
+| *Version* | *Released* | *Description*      | *Lein coordinates*     | *Tagged Github URL* |
+|-----------+------------+--------------------+------------------------+---------------------|
+|     0.1.0 | pending    | 1st public release | =[a-churning-society-of-mind "0.1.0"]= |                     |
+
+** Contributors
+
+| *Name*     | *Role*                          | *Website*      |
+|------------+---------------------------------+----------------|
+| [[tms32@kent.ac.uk][Tristan Strange]] | initiator & principal developer |  |
+
+** License
+
+Copyright © 2015 Tristan Strange
+
+This project is open source and licensed under the [[http://www.eclipse.org/legal/epl-v10.html][Eclipse Public License]].

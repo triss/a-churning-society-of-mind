@@ -1,0 +1,3 @@
+(s/def :expert/pre-condition
+  (s/fspec :args (s/cat :bb ::blackboard)
+           :ret boolean?))
