@@ -1,0 +1,75 @@
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#rerepresenting-workflows-on-the-blackboard][Rerepresenting workflows on the blackboard]]
+   - [[#hypothesise][Hypothesise]]
+   - [[#flowwr][FlowWr]]
+     - [[#as-a-platform-for-automatic-programming][As a platform for automatic programming]]
+     - [[#am-i-sure-i-can-get-nodes][am I sure I can get nodes?]]
+
+* Rerepresenting workflows on the blackboard
+
+** Hypothesise
+
+1) If we place the nodes from a workflow on to a blackboard that blackboard's creative power is greater than the particular organisation of those nodes originally encoded in that workflow.
+
+2) Workflows can be programmatically converted to blackboard processes.
+
+3) Blackboard descriptions do not need special "looping and conditional processing" constructs. These roles can be handed over to experts who re-prioritise other agents.
+
+** FlowWr
+
+*** As a platform for automatic programming
+
+**** cite:Charnley2016
+
+FlowWr's long term aim "is to study automating creativity at process level through the automatic construction of flowcharts for generative processes."
+
+Charley et al. are looking to construct "automated chart development assistants" as part of there FloWr system to enable this.
+
+At current they're looking to "include better looping and conditional processing" it's possible the blackboard model won't require functionality tailored specifically towards this.
+
+ME: I assume the following has been done by Joe - "Include parameter validation using owner-defined regex checking or cross-parameter checks." - SPEC does this?
+
+"reasoned automation over the FlowWr system." - using something like a theorem prover like Coq.
+
+"Design by contract" 
+- "allows sophisticated automatic programming clients that could reason about these specifications"
+- "pre-conditions, post-conditions and invariants"
+
+"bespoke FloWr data-types ... enforce data-consistency by providing methods to support seamless front-end validation."
+
+**** cite:Charnley2014 
+
+"One of the main reasons people give for why software should not be considered creative is follows explicit instructions supplied by a programmer."
+
+If we "get software to write software ... some level of creative responsibility has clearly been handed over."
+
+Some software already "innovates at process (algorithmic) level ... for specific purposes."
+Evolutionary programming has been used.
+So has inductive logic programming.
+
+"In contrast, we are interested here in how software can innovate at process level for exploratory purposes. i.e. where the aim is to invent new process for a new purpose, rather than a given task."
+
+We can systems to "write code directly"
+
+Code is "organised at module level"
+
+Many FlowChart systems exist.
+These are designed to "support human-centric program design."
+- UML tools
+- MSDN VPL
+- RAPTOR
+- IBM's WebSphere
+- Blockly
+- AppInventor
+- Scratch
+ME: What about PureData, Max/MSP, VVVV, and a billion and one other systems used for creative work?
+
+More interested in systems being "able to be given vague instructions (or indeed, none at all) and with some level of automation, produce valuable, efficient flowcharts for generative purposes."
+
+
+*** am I sure I can get nodes?
+
+"only node owners can download and upload new code or rollback versions"
+cite:Charnley2016

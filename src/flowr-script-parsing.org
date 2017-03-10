@@ -1,0 +1,249 @@
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#flowr-script-parsing][FloWr script parsing]]
+   - [[#internal-script-representation][Internal script representation]]
+   - [[#parsing-the-script-to-a-map][Parsing the script to a map]]
+   - [[#namespace-a-churning-society-of-mindflowr-script-parsing][Namespace: a-churning-society-of-mind.flowr-script-parsing]]
+ - [[#testing][Testing]]
+   - [[#namespace-a-churning-society-of-mindflowr-script-parsing-test][Namespace: a-churning-society-of-mind.flowr-script-parsing-test]]
+   - [[#test-data][Test data]]
+     - [[#33-twitter-poems-by-charnley---taken-from-flowwr-1032017][33: Twitter poems by Charnley - Taken from FlowWr 10/3/2017.]]
+
+* TODO FloWr script parsing
+
+A script contains the descriptions of the ProcessNodes used in a Workflow in a textual format.
+
+** Internal script representation
+
+We'll parse this data in to a map for easier management.
+
+These maps will contain an:
+- id :: the name given to the ProcessNode in the script
+- path :: the package/class name of the type of ProcessNode
+- parameter settings :: the settings the parameters should be set or output they were originally connected to
+- output mappings :: the names given to this ProcessNodes outputs
+
+Simple string representation of these values will do for now.
+
+#+BEGIN_SRC clojure :noweb-ref script-spec
+  (s/def ::script (s/coll-of ::process-node-def))
+
+  (s/def ::process-node-def
+    (s/keys :req-un [::id
+                     ::path
+                     ::parameter-settings
+                     ::output-mappings]))
+
+  (s/def ::id string?)
+
+  (s/def ::path (s/+ string?))
+
+  (s/def ::output-mappings
+    (s/coll-of (s/keys :req-un [::name ::mapping])))
+
+  (s/def ::parameter-settings
+    (s/coll-of (s/keys :req-un [::name]
+                       :opt-un [::value])))
+
+  (s/def ::name string?)
+
+  (s/def ::value string?)
+
+  (s/def ::mapping string?)
+#+END_SRC
+
+** Parsing the script to a map
+
+#+BEGIN_SRC clojure :noweb-ref script-file-parsing
+  (defn- parse-node-description
+    [s] (->> (str/split s #"\.")
+             (s/conform (s/cat :path ::path :id ::id))))
+
+  (defn- parse-paramater
+    [s] (->> (str/split s #":")
+             (s/conform (s/cat :name string? :value (s/? string?)))))
+
+  (defn- parse-output-mapping
+    [s] (->> (str/split s #" = ")
+             (s/conform (s/cat :name string? :mapping string?))))
+
+  (defn- parse-params-and-output
+    [params-outputs]
+    (let [{param-s false output-s true} (group-by #(str/starts-with? % "#") params-outputs)]
+      {:paramaters (map parse-paramater param-s)
+       :outputs    (map parse-output-mapping output-s)}))
+
+  (defn- parse-node-def
+    [[fst & rst]]
+    (merge (parse-node-description fst)
+           (parse-params-and-output rst)))
+
+  (defn parse-script
+    "Takes a FloWr script string and parse it in to list of maps."
+    [script] (->> (str/split-lines script)   ;; drop the last line since it only says "Close"
+                  (butlast)
+                  (str/join "\n")
+                  (str/split script #"\n\n") ;; split script into process nodes - using double line breaks
+                  (map str/split-lines)      ;; split each of the lines in those
+                  (map parse-node-def)))     ;; and parse each process node
+#+END_SRC
+
+** Namespace: a-churning-society-of-mind.flowr-script-parsing
+
+ #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/flowr-script-parsing.cljc :noweb yes :mkdirp yes :padline no
+   (ns a-churning-society-of-mind.flowr-script-parsing
+     (:require [clojure.spec :as s]
+               [clojure.string :as str]))
+
+   <<script-spec>>
+   <<script-file-parsing>>
+ #+END_SRC
+
+* Testing
+
+** Namespace: a-churning-society-of-mind.flowr-script-parsing-test
+#+BEGIN_SRC clojure :tangle ../babel/test/a_churning_society_of_mind/test/flowr-script-parsing.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.flowr-script-parsing-test
+    (:require [a-churning-society-of-mind.flowr-script-parsing :as flowr]
+              [clojure.java.io :as io]
+     #?(:clj  [clojure.test :refer :all]
+        :cljs [cemerick.cljs.test :refer-macros [is deftest with-test testing]])))
+
+  (with-test
+    (def script
+      (flowr/parse-script (slurp (io/resource "33-twitter-poems.flowr"))))
+    (is (= (count script) 15)) "Parsed script has 15 nodes.")
+#+END_SRC
+
+** Test data 
+
+Example test data is taken directly from the FloWr system. 
+The following workflows were downloaded manually.
+
+*** 33: Twitter poems by Charnley - Taken from FlowWr 10/3/2017.
+
+#+BEGIN_SRC text :tangle ../babel/resources/33-twitter-poems.flowr :noweb yes :mkdirp yes :padline no
+  text.retrievers.Dictionary.Dictionary_0
+  lowerFrequencyPercent:90
+  upperFrequencyPercent:95
+  numberRequired:10000
+  wordsTuples:
+  tuplesPositionsToKeep:
+  #dictionaryWords = words[*].text
+
+  text.categorisers.WordSenseCategoriser.WordSenseCategoriser_0
+  requiredSense:aj0
+  stringsToCategorise:#dictionaryWords
+  positionForSense:
+  stringTuplesToCategorise:
+  tuplesWordsPositionsOptions:
+  checkAllSenses:
+  #adjectives = haveMainSense[*]
+
+  text.categorisers.SentimentCategoriser.SentimentCategoriser_0
+  strings:#adjectives
+  wordPosition:phrase
+  words:
+  stringTuples:
+  tuplesWordsPositions:
+  #randomNegativeAdjective = allNegativeTexts[r1].text
+
+  text.retrievers.Twitter.Twitter_0
+  query:#randomNegativeAdjective
+  numRequired:1000
+  waitSeconds:
+  #tweetParagraph = tweetParagraph
+  #tweets = tidiedTweets[*]
+
+  text.extractors.TextRankKeyphraseExtractor.TextRankKeyphraseExtractor_0
+  inputStringList:
+  inputString:#tweetParagraph
+  #topKeyphrases = topKeyphrases[*].phrase
+
+  text.categorisers.WordListCategoriser.WordListCategoriser_0
+  wordListFileName:first_names.txt
+  stringsToCategorise:#tweets
+  wordList:
+  stringArraysToCategorise:
+  wordListArray:
+  wordTuplesArray:
+  positionWordInTuples:
+  positionStringInArray:
+  #nameFreeTweets = textsWithoutWord[*]
+
+  text.categorisers.WordListCategoriser.WordListCategoriser_1
+  wordListFileName:twitter_words.txt
+  stringsToCategorise:#nameFreeTweets
+  wordList:
+  stringArraysToCategorise:
+  wordListArray:
+  wordTuplesArray:
+  positionWordInTuples:
+  positionStringInArray:
+  #twitterFreeTweets = textsWithoutWord[*]
+
+  text.categorisers.WordListCategoriser.WordListCategoriser_2
+  wordListFileName:trash_words.txt
+  stringsToCategorise:#twitterFreeTweets
+  wordList:
+  stringArraysToCategorise:
+  wordListArray:
+  wordTuplesArray:
+  positionWordInTuples:
+  positionStringInArray:
+  #trashFreeTweets = textsWithoutWord[*]
+
+  text.categorisers.RegexCategoriser.RegexCategoriser_0
+  requiredString:
+  requiredRegex:.*I .*|.*I'.*|.*[Yy]ou .*|.*[Yy]ou'.*|.* [Ww]e .*|.*[Ww]e'.*|.*[Tt]hey.*|.*[Tt]hey'.*|.*[Tt]heir.*|.* us .*|.* our .*|.*[Mm]y .*|.*[Mm]yself.*|.* he .*|.* she .*
+  stringsToCategorise:#trashFreeTweets
+  #personalTweets = withRegex[*]
+
+  text.matchers.FootprintMatcher.FootprintMatcher_0
+  stringsToMatch:#personalTweets
+  #footprintPairs = matches[r250].matchingPair
+
+  text.matchers.RhymeMatcher.RhymeMatcher_0
+  allowSameWord:false
+  rhymingPhonemes:2
+  rhymingPosition:end
+  stringsToMatch:#personalTweets
+  #rhymingPairs = matches[r250].rhymingPair
+
+  text.combiners.LineCollator.LineCollator_0
+  form:!!a0!b0!b0!a0!!a1!b1!b1!a1!!a2!b2!b2!a2!!a3!b3!b3!a3!!
+  numberRequired:20
+  percentWordsSame:60
+  listA:#rhymingPairs
+  listB:#footprintPairs
+  listC:
+  listD:
+  listE:
+  #collations = collations[*]
+
+  text.combiners.TemplateCombiner.TemplateCombiner_0
+  templateDirectory:twitter_templates
+  templateName:template1.txt
+  numRequired:20
+  a1Text:#randomNegativeAdjective
+  a2Text:
+  a3Text:
+  b1Texts:#topKeyphrases
+  b2Texts:
+  b3Texts:
+  c1Texts:#collations
+  c2Texts:
+  c3Texts:
+  templateText:
+  #instantiatedTemplates = instantiatedTemplates[*]
+
+  text.manipulators.LineSplitter.LineSplitter_0
+  inputStrings:#instantiatedTemplates
+  #poems = stringSplits[*]
+
+  text.sorters.SentimentSorter.SentimentSorter_0
+  textsToSort:#poems
+  #mostMiserablePoem = valencySortedTexts[f1]
+  Close
+#+END_SRC

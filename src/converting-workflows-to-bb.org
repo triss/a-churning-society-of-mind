@@ -7,16 +7,13 @@
    - [[#caveats][Caveats]]
  - [[#re-representation-algorithm][Re-representation Algorithm]]
  - [[#how-are-nodes-ordered-in-scripts][how are nodes ordered in Scripts?]]
- - [[#flowr-script-parsing][FloWr script parsing]]
- - [[#test-data][Test data]]
-   - [[#33-twitter-poems-by-charnley][33: Twitter poems by Charnley]]
  - [[#namespace-a-churning-society-of-mindconverting-workflows-to-bb][Namespace: a-churning-society-of-mind.converting-workflows-to-bb]]
    - [[#the-actual-clojure-namespace][The actual Clojure namespace]]
 
 * Hypothesis
 
-FlowWr workflows can be programmatically converted to blackboard processes and node execution ordering will persist across re-repesentation.
-This is because FloWr workflows still contains no loop or control logic facilities and perhaps represent more of a 'pipeline' than a workflow.
+FlowWr workflows can be programmatically converted to blackboard processes and node execution ordering will persist across re-representation.
+This is perhaps due to FloWr workflows still contains no loop or control logic facilities and perhaps represent more of a 'pipeline' than a workflow????
 
 The experts on the blackboard will perform tasks in the order specified 
 in the original workflow upon launch
@@ -25,7 +22,7 @@ and the dynamics of a new system with the potential for producing
 new artefacts will then emerge.
 
 Therefore a re-repesentation of a FloWr workflow into a blackboard will always have 
-/more expressive power/ - /a larger domain of operation/ - /can potentially generate more stuff/ - thing - ???? -
+/more expressive power/ - /a larger domain of operation/ - /can potentially generate more stuff/ - ????
 than the workflow they encode.
 
 * Assumption
@@ -41,7 +38,7 @@ Predicates of experts will all ask "are all my previously mapped inputs fulfille
 
 - Re-represent all workflows as blackboards.
 - Let the blackboards run.
-- Confirm first output of blackboard fulfills same constraints as workflows output.
+- Confirm first output of blackboard fulfils same constraints as workflows output.
 - Some systems may output more artefacts than the workflow did.
   - These artefacts may have different qualities and need to be analysed qualitatively using SPECS
   - We should probably also examine remaining contents of blackboard for other artefacts using SPECS
@@ -60,6 +57,7 @@ The above statements are probably going to be the source of a long list of cavea
   - Parse script
   - Ensure sorted by number of dependencies
   - For every node in script
+    - construct predicate using mapped parameters
     - add new expert with new predicate to blackboard with current priority
     - reduce priority
 
@@ -67,206 +65,9 @@ The above statements are probably going to be the source of a long list of cavea
 
 We may need to do a sort based on how inputs and outputs are joined. 
 this could be done in a way UGen graphs are optimised in SuperCollider
-i.e. sort by number of depedents,
-actually this sort already appears to have happened? 
+i.e. sort by number of dependants,
+but this sort already appears to have happened? 
 need to examine source?
-
-* TODO FloWr script parsing
-
-A script contains the descriptions of the ProcessNodes used in a Workflow in a textual format.
-
-We'll parse this data in to a map for easier management.
-
-These maps will contain an id, path, the parameter settings and output-mappings.
-
-#+BEGIN_SRC clojure :noweb-ref script-spec
-  (s/def ::script (s/coll-of ::process-node-def))
-
-  (s/def ::process-node-def
-    (s/keys :req-un [::id
-                     ::path
-                     ::parameter-settings
-                     ::output-mappings]))
-
-
-  (s/def ::output-mappings
-    (s/map-of ))
-#+END_SRC
-
-Here we parse out the script in to the map
-
-#+BEGIN_SRC clojure :noweb-ref script-file-parsing
-  (s/def ::node-description
-    (s/cat :path (s/+ string?) :id string?))
-
-  (s/def ::parameter
-    (s/cat :name string? :value (s/? string?)))
-
-  (s/def ::output-mapping
-    (s/cat :name string? :mapping string?))
-
-  (defn parse-node-description
-    [s] (->> (str/split s #"\.")
-             (s/conform ::node-description)))
-
-  (defn parse-paramater
-    [s] (->> (str/split s #":")
-             (s/conform ::parameter)))
-
-  (defn parse-output-mapping
-    [s] (->> (str/split s #" = ")
-             (s/conform ::output-mapping)))
-
-  (defn parse-params-and-output
-    [params-outputs]
-    (let [{param-s output-s} (group-by #(str/starts-with? % "#") params-outputs)]
-      {:paramaters (map parse-paramater param-s)
-       :outputs    (map parse-output-mapping-line output-s))}))
-
-  (defn parse-node-description
-    [[fst & rst]]
-    (merge (parse-node-description fst)
-           (parse-params-and-output rst)))
-
-  (defn split-node-descriptions
-    "Splits the ProcessNodes decriptions in a script."
-    ;; TODO should I split based on some fancier mechanism? i.e. position of '.' in line or something?
-    [script] (str/split script #"\n\n"))
-
-  (def parse-script
-    [script] (->> (split-node-descriptions script)
-                  (map parse-node-description)))
-#+END_SRC
-
-* Test data
-
-** 33: Twitter poems by Charnley
-
-#+BEGIN_SRC
-text.retrievers.Dictionary.Dictionary_0
-lowerFrequencyPercent:90
-upperFrequencyPercent:95
-numberRequired:10000
-wordsTuples:
-tuplesPositionsToKeep:
-#dictionaryWords = words[*].text
-
-text.categorisers.WordSenseCategoriser.WordSenseCategoriser_0
-requiredSense:aj0
-stringsToCategorise:#dictionaryWords
-positionForSense:
-stringTuplesToCategorise:
-tuplesWordsPositionsOptions:
-checkAllSenses:
-#adjectives = haveMainSense[*]
-
-text.categorisers.SentimentCategoriser.SentimentCategoriser_0
-strings:#adjectives
-wordPosition:phrase
-words:
-stringTuples:
-tuplesWordsPositions:
-#randomNegativeAdjective = allNegativeTexts[r1].text
-
-text.retrievers.Twitter.Twitter_0
-query:#randomNegativeAdjective
-numRequired:1000
-waitSeconds:
-#tweetParagraph = tweetParagraph
-#tweets = tidiedTweets[*]
-
-text.extractors.TextRankKeyphraseExtractor.TextRankKeyphraseExtractor_0
-inputStringList:
-inputString:#tweetParagraph
-#topKeyphrases = topKeyphrases[*].phrase
-
-text.categorisers.WordListCategoriser.WordListCategoriser_0
-wordListFileName:first_names.txt
-stringsToCategorise:#tweets
-wordList:
-stringArraysToCategorise:
-wordListArray:
-wordTuplesArray:
-positionWordInTuples:
-positionStringInArray:
-#nameFreeTweets = textsWithoutWord[*]
-
-text.categorisers.WordListCategoriser.WordListCategoriser_1
-wordListFileName:twitter_words.txt
-stringsToCategorise:#nameFreeTweets
-wordList:
-stringArraysToCategorise:
-wordListArray:
-wordTuplesArray:
-positionWordInTuples:
-positionStringInArray:
-#twitterFreeTweets = textsWithoutWord[*]
-
-text.categorisers.WordListCategoriser.WordListCategoriser_2
-wordListFileName:trash_words.txt
-stringsToCategorise:#twitterFreeTweets
-wordList:
-stringArraysToCategorise:
-wordListArray:
-wordTuplesArray:
-positionWordInTuples:
-positionStringInArray:
-#trashFreeTweets = textsWithoutWord[*]
-
-text.categorisers.RegexCategoriser.RegexCategoriser_0
-requiredString:
-requiredRegex:.*I .*|.*I'.*|.*[Yy]ou .*|.*[Yy]ou'.*|.* [Ww]e .*|.*[Ww]e'.*|.*[Tt]hey.*|.*[Tt]hey'.*|.*[Tt]heir.*|.* us .*|.* our .*|.*[Mm]y .*|.*[Mm]yself.*|.* he .*|.* she .*
-stringsToCategorise:#trashFreeTweets
-#personalTweets = withRegex[*]
-
-text.matchers.FootprintMatcher.FootprintMatcher_0
-stringsToMatch:#personalTweets
-#footprintPairs = matches[r250].matchingPair
-
-text.matchers.RhymeMatcher.RhymeMatcher_0
-allowSameWord:false
-rhymingPhonemes:2
-rhymingPosition:end
-stringsToMatch:#personalTweets
-#rhymingPairs = matches[r250].rhymingPair
-
-text.combiners.LineCollator.LineCollator_0
-form:!!a0!b0!b0!a0!!a1!b1!b1!a1!!a2!b2!b2!a2!!a3!b3!b3!a3!!
-numberRequired:20
-percentWordsSame:60
-listA:#rhymingPairs
-listB:#footprintPairs
-listC:
-listD:
-listE:
-#collations = collations[*]
-
-text.combiners.TemplateCombiner.TemplateCombiner_0
-templateDirectory:twitter_templates
-templateName:template1.txt
-numRequired:20
-a1Text:#randomNegativeAdjective
-a2Text:
-a3Text:
-b1Texts:#topKeyphrases
-b2Texts:
-b3Texts:
-c1Texts:#collations
-c2Texts:
-c3Texts:
-templateText:
-#instantiatedTemplates = instantiatedTemplates[*]
-
-text.manipulators.LineSplitter.LineSplitter_0
-inputStrings:#instantiatedTemplates
-#poems = stringSplits[*]
-
-text.sorters.SentimentSorter.SentimentSorter_0
-textsToSort:#poems
-#mostMiserablePoem = valencySortedTexts[f1]
-Close
-
-#+END_SRC
 
 * Namespace: a-churning-society-of-mind.converting-workflows-to-bb
 ** The actual Clojure namespace

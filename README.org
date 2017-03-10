@@ -5,27 +5,27 @@ FIXME: write description
 
 * Contents                                                         :toc_3_gh:
  - [[#about-the-project][About the project]]
-     - [[#todo-overview][TODO Overview]]
-     - [[#todo-status][TODO Status]]
-     - [[#todo-example-usage][TODO Example usage]]
+   - [[#overview][Overview]]
+   - [[#status][Status]]
+   - [[#example-usage][Example usage]]
  - [[#namespaces][Namespaces]]
  - [[#tests][Tests]]
  - [[#project-definition][Project definition]]
-     - [[#injected-properties][Injected properties]]
-     - [[#dependencies][Dependencies]]
-         - [[#runtime][Runtime]]
-         - [[#development][Development]]
-     - [[#leiningen-coordinates][Leiningen coordinates]]
-     - [[#building-this-project][Building this project]]
-         - [[#testing][Testing]]
-         - [[#working-with-the-repl][Working with the REPL]]
-     - [[#leiningen-project-file][Leiningen project file]]
-     - [[#clojurescript-html-harness][ClojureScript HTML harness]]
-     - [[#accessing-library-version-during-runtime][Accessing library version during runtime]]
-         - [[#version-namespace][Version namespace]]
-     - [[#release-history][Release history]]
-     - [[#contributors][Contributors]]
-     - [[#license][License]]
+   - [[#injected-properties][Injected properties]]
+   - [[#dependencies][Dependencies]]
+     - [[#runtime][Runtime]]
+     - [[#development][Development]]
+   - [[#leiningen-coordinates][Leiningen coordinates]]
+   - [[#building-this-project][Building this project]]
+     - [[#testing][Testing]]
+     - [[#working-with-the-repl][Working with the REPL]]
+   - [[#leiningen-project-file][Leiningen project file]]
+   - [[#clojurescript-html-harness][ClojureScript HTML harness]]
+   - [[#accessing-library-version-during-runtime][Accessing library version during runtime]]
+     - [[#version-namespace][Version namespace]]
+   - [[#release-history][Release history]]
+   - [[#contributors][Contributors]]
+   - [[#license][License]]
 
 * About the project
 
@@ -75,12 +75,12 @@ target/a-churning-society-of-mind-<<version>>.js
 
 **** [[https://github.com/clojure/clojure][Clojure]]
 #+BEGIN_SRC clojure :noweb-ref dep-clj
-[org.clojure/clojure "1.7.0"]
+[org.clojure/clojure "1.9.0-alpha14"]
 #+END_SRC
 
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
-[org.clojure/clojurescript "1.7.107"]
+[org.clojure/clojurescript "1.9.495"]
 #+END_SRC
 
 *** Development

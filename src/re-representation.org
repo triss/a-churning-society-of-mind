@@ -61,10 +61,10 @@ We can write functions that rerepresent.
 #+END_SRC
 
 ** The representation needs some of its own type information
+   
+** re-represent a sine wave
 
-** an example
-
-Take a function. This is a representation of a concept. e.g. a sine wave, search, web service or an opera.
+Take a function. This is a representation of a concept. e.g. a sine wave
 
 Represent that function in side a neural network by training one.
 
@@ -78,8 +78,26 @@ It easy to see how this could be handcoded.
 
 This above rerepresentation has the form of a pipeline.
 
+** How do we evaluate this?
+No base line for comparison
+
+*** Creative Tripod
+**** Appreciative
+Unless we say machine learning is appreciating a concept it probably isn't
+**** Imaginative
+System doesn't do a lot of that. Re-representation will distort
+**** Skillfullness
+*** SPECS
+**** Around half of 14 measures apply
+*** FACE
+**** things won't move
+
 * the blackboard as a substrate
 
 the blackboard allows for automated programming of process of the above type to occur with the ordering being explicitly encoded.
+
+We can re-represent any workflow as a blackboard process.
+
+Many work flow processes have been evaluated
 
 
