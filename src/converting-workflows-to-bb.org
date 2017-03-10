@@ -8,7 +8,6 @@
  - [[#re-representation-algorithm][Re-representation Algorithm]]
  - [[#how-are-nodes-ordered-in-scripts][how are nodes ordered in Scripts?]]
  - [[#flowr-script-parsing][FloWr script parsing]]
-   - [[#warning-boring-stuff-ahead][Warning boring stuff ahead]]
  - [[#test-data][Test data]]
    - [[#33-twitter-poems-by-charnley][33: Twitter poems by Charnley]]
  - [[#namespace-a-churning-society-of-mindconverting-workflows-to-bb][Namespace: a-churning-society-of-mind.converting-workflows-to-bb]]
@@ -16,27 +15,27 @@
 
 * Hypothesis
 
-FlowWr workflows can be programmatically converted to blackboard processes.
-node execution ordering will persist across re-repesentation.
-(especially since FloWr workflows still contains no loop or control logic facilities and they really represent more of a 'pipeline' than a workflow?)
-i.e. the modules will perform tasks in the order specified 
+FlowWr workflows can be programmatically converted to blackboard processes and node execution ordering will persist across re-repesentation.
+This is because FloWr workflows still contains no loop or control logic facilities and perhaps represent more of a 'pipeline' than a workflow.
+
+The experts on the blackboard will perform tasks in the order specified 
 in the original workflow upon launch
 after this they will continue to operate,
 and the dynamics of a new system with the potential for producing
 new artefacts will then emerge.
 
-Therefore a re-repesentation of a workflow into a blackboard will always have 
+Therefore a re-repesentation of a FloWr workflow into a blackboard will always have 
 /more expressive power/ - /a larger domain of operation/ - /can potentially generate more stuff/ - thing - ???? -
 than the workflow they encode.
 
 * Assumption
 
-This will be achieved by ensuring all nodes from the workflow
-are sorted by the number of dependent nodes they have
+The persistence of node ordering will be achieved by ensuring all nodes 
+from the workflow are sorted by the number of dependent nodes they have
 and assigned decreasing priorities in that order
 when re-reprentating.
 
-Predicates of experts will all ask "are all my previously mapped inputs fulfilled?"
+Predicates of experts will all ask "are all my previously mapped inputs fulfilled?".
 
 * How will I test this
 
@@ -78,6 +77,8 @@ A script contains the descriptions of the ProcessNodes used in a Workflow in a t
 
 We'll parse this data in to a map for easier management.
 
+These maps will contain an id, path, the parameter settings and output-mappings.
+
 #+BEGIN_SRC clojure :noweb-ref script-spec
   (s/def ::script (s/coll-of ::process-node-def))
 
@@ -92,9 +93,7 @@ We'll parse this data in to a map for easier management.
     (s/map-of ))
 #+END_SRC
 
-** Warning boring stuff ahead
-
-Here we parse out the script in to a map
+Here we parse out the script in to the map
 
 #+BEGIN_SRC clojure :noweb-ref script-file-parsing
   (s/def ::node-description
