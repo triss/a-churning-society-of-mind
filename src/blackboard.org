@@ -2,6 +2,11 @@
 
 * Contents                                                         :toc_3_gh:
  - [[#the-blackboard-model][The blackboard model]]
+   - [[#metaphor][Metaphor]]
+     - [[#independence-of-expertise][Independence of expertise]]
+   - [[#how-does-it-differ-to-rule-based-systems][How does it differ to rule based systems?]]
+   - [[#problems][Problems]]
+   - [[#my-adaption][My adaption]]
    - [[#the-data-structure][The data structure]]
      - [[#history][History]]
    - [[#experts][Experts]]
@@ -30,10 +35,65 @@
 
 * The blackboard model
 
- Misztal stated that the blackboard model "has a potential to be used in simulating cognitive processes such as creativity." cite:Misztal2014 
+"Unlike most AI problem-solving techniques that implement formal models, 
+the blackboard approach was designed as a means for dealing with ill-defined, complex applications."
+cite:Craig1988
 
-I'm not 100% on the philosophy, my consciousness doesn't feel like whats described in Global Workspace Theory.
-But we should allow for forms of creativity other than human, blah blah, bloop blooop, and this looks like it could work.
+Misztal stated that the blackboard model "has a potential to be used in simulating cognitive processes such as creativity." 
+cite:Misztal2014 
+
+** Metaphor 
+
+"Imagine a group of human specialists seated next to a large blackboard. 
+The specialists are working cooperatively to solve a problem, using the blackboard as the workplace for developing the solution.
+
+Problem solving begins when the problem and initial data are written onto the blackboard.
+The specialists watch the blackboard, looking for an opportunity to apply their expertise to the developing solution.
+When a specialist finds sufficient information to make a contribution, she records the contribution on the blackboard, hopefully enabling other specialists to apply their expertise.
+This process of adding contributions to the blackboard continues until the problem has been solved."
+cite:Craig1988
+
+*** Independence of expertise
+
+Experts are "not trained to work solely with that specific group of specialists" 
+and may have 
+"learned their expertise in vastly different situations."
+"a specialist is a self-contained expert on some aspects of the problem and can contribute to the solution independently of the particular mix of other specialists in the room."
+In blackboard systems "have this functional modularization of expertise".
+cite:Craig1988
+
+**** Experts/knowledge sources
+
+Experts were traditionally referred to as knowledge sources or KS.
+
+This seems to have stopped and we now call them experts again (cite:Misztal2014)
+
+each "can solve certain aspects of an overall problem"
+"No KS requires other KSs in making its contribution"
+"Once it finds the information it needs on the blackboard, it can proceed without any assistance from other KSs."
+
+"without changing any other KSs, 
+additional KSs can be added to the blackboard system,
+poorer performing KSs can be enhanced, 
+and inappropriate KSs can be removed."
+cite:Craig1988
+
+** How does it differ to rule based systems?
+
+"Rule-based systems are also modular, but at the level of individual rules.
+Unlike the large-grained scope of KSs, 
+the small size of each rule prevents full independence.
+A pair of rules that implement iteration by using a counter value and a termination rule is an example of two rules that cannot be designed independently or removed individually without affecting the performance of the other rule."
+cite:Craig1988
+
+** Problems
+"However, the lack of formal specifications has also contributed to confusion about blackboard systems and their proper place in the AI problem-solving toolkit."
+cite:Craig1988
+
+** My adaption
+
+We've built intelligence all we need to do is let go of the reigns, 
+perhaps we need to grow and behave irresponsibly.
 
  The blackboard model traditionally solves problems by:
  - placing experts around a black-board
