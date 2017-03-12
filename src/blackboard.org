@@ -4,11 +4,16 @@
  - [[#the-blackboard-model][The blackboard model]]
    - [[#the-metaphor][The metaphor]]
      - [[#formalised-metaphor-citecraig1988][Formalised metaphor cite:Craig1988]]
-     - [[#expertsknowledge-sources][Experts/knowledge sources]]
-     - [[#flexible-representation-of-blackboard-information][Flexible representation of blackboard information]]
-     - [[#common-interaction-language][Common interaction language]]
-     - [[#positioning-metrics][Positioning metrics]]
-     - [[#event-based-activation][Event based activation]]
+   - [[#expertsknowledge-sources][Experts/knowledge sources]]
+   - [[#triggering-condition][Triggering condition]]
+   - [[#independence-of-expertise][Independence of expertise]]
+   - [[#diversity-in-problem-solving-techniques][Diversity in problem-solving techniques]]
+   - [[#flexible-representation-of-blackboard-information][Flexible representation of blackboard information]]
+   - [[#common-interaction-language][Common interaction language]]
+   - [[#positioning-metrics][Positioning metrics]]
+   - [[#subdivide-the-blackboard-into-regions]["subdivide the blackboard into regions,"]]
+   - [[#event-based-activation][Event based activation]]
+     - [[#opportunities-arise-when][Opportunities arise when]]
      - [[#need-for-control][Need for control]]
      - [[#internal-solution-generation][Internal solution generation]]
    - [[#how-does-it-differ-to-rule-based-systems][How does it differ to rule based systems?]]
@@ -43,7 +48,7 @@ cite:Craig1988
 - The blackboard is a global database containing input data, partial solutions, and other data that are in various problem-solving states.
 - A control component makes runtime decisions about the course of problem solving and the expenditure of problem-solving resources. The control component is separate from the individual KSs. In some blackboard systems, the control component itself is implemented using a blackboard approach (involving control KSs and blackboard areas devoted to control)
 
-*** Experts/knowledge sources
+** Experts/knowledge sources
 
 Experts were traditionally referred to as knowledge sources or KS.
 
@@ -66,28 +71,28 @@ and inappropriate KSs can be removed."
 "A KS needs no knowledge of the expertise, or even the existence, of the others;
 however, it must be able to understand the state of the problem-solving process and the representation of relevant information on the blackboard."
 
-**** Triggering condition
+** Triggering condition
 "Each KS knows the conditions under which it can contribute to the solution"
 
 cite:Craig1988
 
-**** Independence of expertise
+** Independence of expertise
 
- Experts are "not trained to work solely with that specific group of specialists" 
- and may have 
- "learned their expertise in vastly different situations."
- "a specialist is a self-contained expert on some aspects of the problem and can contribute to the solution independently of the particular mix of other specialists in the room."
- In blackboard systems "have this functional modularization of expertise".
- cite:Craig1988
+Experts are "not trained to work solely with that specific group of specialists" 
+and may have 
+"learned their expertise in vastly different situations."
+"a specialist is a self-contained expert on some aspects of the problem and can contribute to the solution independently of the particular mix of other specialists in the room."
+In blackboard systems "have this functional modularization of expertise".
+cite:Craig1988
 
-**** Diversity in problem-solving techniques
+** Diversity in problem-solving techniques
 
 "It does not matter if one KS is a forward-chaining rule-based system,
 another uses a neural network approach, another uses a linear-programming algorithm,
 and still another is a procedural simulation program."
 cite:Craig1988
 
-*** Flexible representation of blackboard information
+** Flexible representation of blackboard information
 
 "could use any intelligible doodles when adding their contributions to the blackboard.
 They might use formulas, diagrams, sentences, checklists, and numerous circles and arrows."
@@ -103,7 +108,7 @@ It means having the control flexibility to perform the most appropriate problem-
 
 cite:Craig1988
 
-*** Common interaction language
+** Common interaction language
 
 "While flexible representation of blackboard information is important,
 there must also be a common understanding of the representation of the information placed on the blackboard 
@@ -126,7 +131,7 @@ Coercion experts that move information from one sub-representation to another.
 This will a major source of research.
 Ultimately matrices/vectors containing floating point numbers might be best representation?
 
-*** Positioning metrics
+** Positioning metrics
 
 Apparently computers are slow so:
 
@@ -135,7 +140,7 @@ Apparently computers are slow so:
 "specialist should not have to scan the entire blackboard to see if a particular item has been placed on the blackboard by another specialist."
 cite:Craig1988
 
-**** "subdivide the blackboard into regions,"
+** "subdivide the blackboard into regions,"
 
 "provide sophisticated multidimensional metrics for efficiently locating blackboard objects of interest."
 
@@ -160,16 +165,16 @@ and maintaining the state of numerous, partially completed patterns is expensive
 
 Hearsay-II developers noticed that performance would be bad and opted to use a combination of "simple triggering-condition specifications to be followed by a more detailed procedural examination of the blackboard before activating the KS for execution."
 
-*** Event based activation
+** Event based activation
 
 KSs do not interact directly.
 Each KS watches the blackboard for *opportunity* to contribute.
 
-**** Opportunities arise when
-***** addition
-***** removal
-***** change
-***** external events
+*** Opportunities arise when
+**** addition
+**** removal
+**** change
+**** external events
 
 "each KS informs the blackboard system about the kind of events in which it is interested." cite:Craig1988 
 I'm not sure about this. I still feel a search may be OK????
@@ -181,18 +186,18 @@ I think computers are quick enough to do a pattern search. Speed is the least of
 
 **** cite:Craig1988 
 
-"A control component that is separate from the individual KSs is responsible for managing the course of problem solving.
-The control component can be viewed as a specialist in directing problem solving, by considering the overall benefit of the contributions that would be made by triggered KSs.
-When the currently executing KS activation completes, the control component selects the most appropriate pending KS activation for execution."
+ "A control component that is separate from the individual KSs is responsible for managing the course of problem solving.
+ The control component can be viewed as a specialist in directing problem solving, by considering the overall benefit of the contributions that would be made by triggered KSs.
+ When the currently executing KS activation completes, the control component selects the most appropriate pending KS activation for execution."
 
-"Each triggered KS informs the control component of the quality and costs associated with its contribution,
-without actually performing the work to compute the contribution."
-"using fast, low-cost, approximations developed by the KS writer."
-"If I am executed, I’ll generate contributions of this type, 
-with these qualities, while expending these resources."
+ "Each triggered KS informs the control component of the quality and costs associated with its contribution,
+ without actually performing the work to compute the contribution."
+ "using fast, low-cost, approximations developed by the KS writer."
+ "If I am executed, I’ll generate contributions of this type, 
+ with these qualities, while expending these resources."
 
-I'm not sure the above is a good idea. I'd rather prioritisation agents. They could re-order based on any logic.
-We could have multiple agents responsible for reordering different sets of agents.
+ I'm not sure the above is a good idea. I'd rather prioritisation agents. They could re-order based on any logic.
+ We could have multiple agents responsible for reordering different sets of agents.
 
 *** Internal solution generation
 
