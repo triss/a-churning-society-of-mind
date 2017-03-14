@@ -1,0 +1,8 @@
+
+* The blackboard model
+
+The "blackboard approach was designed as a means for dealing with ill-defined, complex applications." cite:Craig1988, "has a potential to be used in simulating cognitive processes such as creativity" cite:Misztal2014 and Wiggins notes that similar systems may "account, ultimately, for original thought itself." cite:Wiggins
+
+Over the past decade computational researchers have looked to utilise it in several domains including discovering mathematical theorems cite:charnley2008, story generation cite:Montfort2013 and poetry generation cite:Misztal2014 .
+
+Misztal-Radecka and Indurkhya have recently recommended that a an "open-source platform based on the blackboard architecture be produced" cite:misztal2016 that can be extended by it's users. Whilst they recommends this system be focused on poetry generation but Charnley notes "it is imperative that generic frameworks are developed if the field of combining reasoning systems is to progress." cite:Charnley2009 
