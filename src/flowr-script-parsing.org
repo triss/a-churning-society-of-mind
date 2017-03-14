@@ -18,7 +18,7 @@ A script contains the descriptions of the ProcessNodes used in a Workflow in a t
 
 We'll parse this data in to a map for easier management.
 
-These maps will contain an:
+These maps will contain:
 - id :: the name given to the ProcessNode in the script
 - path :: the package/class name of the type of ProcessNode
 - parameter settings :: the settings the parameters should be set or output they were originally connected to
@@ -81,12 +81,12 @@ Simple string representation of these values will do for now.
 
   (defn parse-script
     "Takes a FloWr script string and parse it in to list of maps."
-    [script] (->> (str/split-lines script)   ;; drop the last line since it only says "Close"
-                  (butlast)
-                  (str/join "\n")
-                  (str/split script #"\n\n") ;; split script into process nodes - using double line breaks
-                  (map str/split-lines)      ;; split each of the lines in those
-                  (map parse-node-def)))     ;; and parse each process node
+    [script] (-> (str/split-lines script)   ;; drop the last line since it only says "Close"
+                 (butlast)
+                 (str/join "\n")
+                 (str/split #"\n\n")        ;; split script into process nodes - using double line breaks
+                 (map str/split-lines)      ;; split each of the lines in those
+                 (map parse-node-def)))     ;; and parse each process node
 #+END_SRC
 
 ** Namespace: a-churning-society-of-mind.flowr-script-parsing
@@ -103,6 +103,7 @@ Simple string representation of these values will do for now.
 * Testing
 
 ** Namespace: a-churning-society-of-mind.flowr-script-parsing-test
+
 #+BEGIN_SRC clojure :tangle ../babel/test/a_churning_society_of_mind/test/flowr-script-parsing.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.flowr-script-parsing-test
     (:require [a-churning-society-of-mind.flowr-script-parsing :as flowr]
@@ -122,6 +123,8 @@ Example test data is taken directly from the FloWr system.
 The following workflows were downloaded manually.
 
 *** 33: Twitter poems by Charnley - Taken from FlowWr 10/3/2017.
+
+From manual inspection we can see that this script has 15 ProcessNodes.
 
 #+BEGIN_SRC text :tangle ../babel/resources/33-twitter-poems.flowr :noweb yes :mkdirp yes :padline no
   text.retrievers.Dictionary.Dictionary_0

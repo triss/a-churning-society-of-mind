@@ -1,0 +1,111 @@
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#coercion-and-searching][Coercion and searching]]
+   - [[#charnley-worked-on-broadcast-language-for-gc-toolkit][Charnley worked on broadcast language for GC toolkit]]
+   - [[#craig-notes-that-we-should-have-a-common-interaction-language][Craig notes that we should have a common interaction language]]
+     - [[#positioning-metrics][Positioning metrics]]
+     - [[#subdivide-the-blackboard-into-regions]["subdivide the blackboard into regions,"]]
+     - [[#event-based-activation][Event based activation]]
+
+* Coercion and searching
+
+
+** Charnley worked on broadcast language for GC toolkit
+cite:charnley2008
+
+Broadcasting seems more complex than a search.
+Yes a search is slow but computers are pretty quick really.
+
+** Craig notes that we should have a common interaction language
+
+"While flexible representation of blackboard information is important,
+there must also be a common understanding of the representation of the information placed on the blackboard 
+in order for the specialists to interact."
+
+"formulas, diagrams, sentences, and checklists must be understood by all specialists who need to access the information."
+
+"differing nationalities, the use of different languages on the blackboard would hamper or even prohibit sufficient interaction to solve the problem."
+
+"KSs in blackboard systems must be able to correctly interpret the information recorded on the blackboard by other KSs."
+
+"jargon shared by only a few KSs limits the flexibility of applying other KSs on that information."
+
+"representational expressiveness of a specialized representation shared by only a few KSs and a fully general representation understood by all KSs.
+Finding the proper balance is an important aspect of blackboard-application engineering."
+cite:Craig1988
+
+I think the language of experts can be information. 
+Coercion experts that move information from one sub-representation to another.
+This will a major source of research.
+Ultimately matrices/vectors containing floating point numbers might be best representation?
+
+
+*** Positioning metrics
+
+ Apparently computers are slow so:
+
+ "blackboard begins to grow, quickly locating pertinent information becomes a problem."
+
+ "specialist should not have to scan the entire blackboard to see if a particular item has been placed on the blackboard by another specialist."
+ cite:Craig1988
+
+*** "subdivide the blackboard into regions,"
+
+ "provide sophisticated multidimensional metrics for efficiently locating blackboard objects of interest."
+
+ "Efficient retrieval is needed to support the use of the blackboard as a group memory"
+
+ "important characteristic of the blackboard approach is the ability to integrate contributions for which relationships would be difficult to specify by the KS writer in advance."
+
+ "KS working on one aspect of the problem may put a contribution on the blackboard that does not initially seem relevant or immediately interesting to any other KS."
+
+ "Only until much later, when substantial work on other aspects of the problem has been performed,
+ is there enough context to realize the value of the early contribution."
+
+ "Additionally, the system can notice when promising contributions placed on the blackboard remain unused by other KSs and possibly choose to focus problem-solving activity on understanding why they did not fit with other contributions."
+
+ "This makes a simple pattern-matching specification of the specific contributions difficult and computationally inefficient."
+ I'm not sure this a problem????
+
+ "contributions placed on the blackboard may never prove useful,
+ and maintaining the state of numerous, partially completed patterns is expensive."
+
+ "an important characteristic of blackboard systems is enabling an executing KS to quickly and efficiently inspect the blackboard to see if relevant information is present."
+
+ Hearsay-II developers noticed that performance would be bad and opted to use a combination of "simple triggering-condition specifications to be followed by a more detailed procedural examination of the blackboard before activating the KS for execution."
+
+*** Event based activation
+
+ KSs do not interact directly.
+ Each KS watches the blackboard for *opportunity* to contribute.
+
+**** Opportunities arise when
+***** addition
+***** removal
+***** change
+***** external events
+
+ "each KS informs the blackboard system about the kind of events in which it is interested." cite:Craig1988 
+ I'm not sure about this. I still feel a search may be OK????
+ I think computers are quick enough to do a pattern search. Speed is the least of our troubles, art takes human ages. Computers do it much quicker. I think we're going plenty fast enough.
+
+**** Need for control
+
+***** cite:Misztal2014 just uses a priority number to order things
+     
+***** cite:Craig1988 
+
+  "A control component that is separate from the individual KSs is responsible for managing the course of problem solving.
+  The control component can be viewed as a specialist in directing problem solving, by considering the overall benefit of the contributions that would be made by triggered KSs.
+  When the currently executing KS activation completes, the control component selects the most appropriate pending KS activation for execution."
+
+  "Each triggered KS informs the control component of the quality and costs associated with its contribution,
+  without actually performing the work to compute the contribution."
+  "using fast, low-cost, approximations developed by the KS writer."
+  "If I am executed, I’ll generate contributions of this type, 
+  with these qualities, while expending these resources."
+
+  I'm not sure the above is a good idea. I'd rather prioritisation agents. They could re-order based on any logic.
+  We could have multiple agents responsible for reordering different sets of agents.
+
