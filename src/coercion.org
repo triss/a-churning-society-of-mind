@@ -20,8 +20,7 @@ Yes a search is slow but computers are pretty quick really.
 ** Craig notes that we should have a common interaction language
 
 "While flexible representation of blackboard information is important,
-there must also be a common understanding of the representation of the information placed on the blackboard 
-in order for the specialists to interact."
+there must also be a common understanding of the representation of the information placed on the blackboard in order for the specialists to interact."
 
 "formulas, diagrams, sentences, and checklists must be understood by all specialists who need to access the information."
 
@@ -39,7 +38,6 @@ I think the language of experts can be information.
 Coercion experts that move information from one sub-representation to another.
 This will a major source of research.
 Ultimately matrices/vectors containing floating point numbers might be best representation?
-
 
 *** Positioning metrics
 

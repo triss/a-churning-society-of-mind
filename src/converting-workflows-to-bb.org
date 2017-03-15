@@ -40,9 +40,9 @@ Predicates of experts will all ask "are all my previously mapped inputs fulfille
 - Let the blackboards run.
 - Confirm first output of blackboard fulfils same constraints as workflows output.
 - Some systems may output more artefacts than the workflow did.
-  - These artefacts may have different qualities and need to be analysed qualitatively using SPECS
-  - We should probably also examine remaining contents of blackboard for other artefacts using SPECS
 - After we have our *quantitative* results we can analyse process using
+  - Extra artefacts may have different qualities and need to be analysed qualitatively using SPECS
+  - We should probably also examine remaining contents of blackboard for other artefacts using SPECS
   - FACE but I'm not sure it's actually powerful enough to pick up change in power
   - Creative Tripod might be better guide but still pretty poor of describing power
 

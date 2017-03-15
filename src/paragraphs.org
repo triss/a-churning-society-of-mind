@@ -1,8 +1,49 @@
-
 * The blackboard model
 
-The "blackboard approach was designed as a means for dealing with ill-defined, complex applications." cite:Craig1988, "has a potential to be used in simulating cognitive processes such as creativity" cite:Misztal2014 and Wiggins notes that similar systems may "account, ultimately, for original thought itself." cite:Wiggins
+The ``blackboard approach was designed as a means for dealing with ill-defined, complex applications'' and cite:Craig1988, has ``a potential to be used in simulating cognitive processes such as creativity'' cite:Misztal2014 and some even think that similar systems may ``account, ultimately, for original thought itself.'' cite:Wiggins
 
-Over the past decade computational researchers have looked to utilise it in several domains including discovering mathematical theorems cite:charnley2008, story generation cite:Montfort2013 and poetry generation cite:Misztal2014 .
+Over the past decade computational creativity researchers have looked to utilise the model in a several domains including discovering mathematical theorems in the GC toolkit cite:charnley2008, story generation in Slant cite:Montfort2013 and Misztal and Indurkhya structured a poetry generation around it cite:Misztal2014 .
 
-Misztal-Radecka and Indurkhya have recently recommended that a an "open-source platform based on the blackboard architecture be produced" cite:misztal2016 that can be extended by it's users. Whilst they recommends this system be focused on poetry generation but Charnley notes "it is imperative that generic frameworks are developed if the field of combining reasoning systems is to progress." cite:Charnley2009 
+Misztal-Radecka and Indurkhya have recently recommended that an ``open-source platform based on the blackboard architecture be produced'' cite:misztal2016. Whilst they recommends this system be focused on poetry generation Charnley  and Colton note that ``it is imperative that generic frameworks are developed if the field of combining reasoning systems is to progress.'' cite:Charnley2008 
+
+Work is progressing in this area and systems such as FloWr cite:Charnley2014 and ConCreTeFlows cite:Znidar2016 have begun to address this issue within the field of computational creativity. These systems behave similarly and provide much the same functionality despite having different design goals. 
+The blackboard model provides and alternative and potentially more expressive means of structuring systems than these two workflow (or perhaps more accurately in one of the systems case's pipeline) based systems.
+
+* How it works
+
+The blackboard model traditionally solves problems by:
+- placing experts around a blackboard
+- letting experts take it turns to add and remove items from the blackboard with a certain priority
+- stopping when a particular problem is solved.
+
+Processing starts when information is inputted to the system that expert can operate on.
+
+* How will my system differ
+
+Many of the blackboard systems developed in the eighties use `broadcasting' to announce to relevant modules that information they can operate on has been placed on the blackboard cite:Craig1988. This was a common approach through until the beginning of the 21st century indeed Charnley and Colton use this means of inter-process communication in the GC toolkit. cite:charnley2008 
+
+Since computers have improved in speed since such a complication of the model is unnecessary. 
+Experts around the blackboard model should be free to search for the type of data they operate on.
+Indeed Misztal and Indurkhya later uses such a method to structure there poetry system. cite:Misztal2014 
+
+We'll modify the model slightly by placing experts on the blackboard such that they may modify one another.
+
+We also keep track of the blackboards history such that experts can use that in there analysis if they require it. 
+
+* Re-representation and the blackboard model
+
+The system imposes no restraint on the way experts leave information on the blackboard.
+
+Many of the modules within a blackboard or other architectures sole purpose is re-representing the information in a given input such that it can be utilised by other modules. For example in Misztal-Radecka and Indurkhya's system re-represent input texts as strings representing moods. cite:misztal2016 
+
+Craig notes that ``While flexible representation of blackboard information is important,
+there must also be a common understanding of the representation of the information placed on the blackboard in order for the specialists to interact.'' and that ``formulas, diagrams, sentences, and checklists must be understood by all specialists who need to access the information.''
+He notes that ``jargon shared by only a few'' experts ``limits the flexibility of applying other'' experts ``on that information.'' cite:Craig1988 
+
+In many instances experts whose purpose is coerce/marshal information from one representation to another will greatly broaden the domain a particular set of experts can operate within.
+
+Alongside this we can experiment with re-representing other programming models on the blackboard. 
+Systems like FloWr provide workflows that could be re-represented on a blackboard.
+cite:Charnley2016
+
+Eventually we should look to build experts that can re-represent one another such that systems can automatically find new ways of generating and processing information.

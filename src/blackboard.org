@@ -12,6 +12,8 @@
    - [[#how-does-it-differ-to-rule-based-systems][How does it differ to rule based systems?]]
    - [[#problems][Problems]]
    - [[#why][Why?]]
+ - [[#john-hollande---hidden-order][John Hollande - hidden order]]
+ - [[#how-to-get-a-phd-in-ai][How to get a PhD in AI]]
 
 * The blackboard model
 
@@ -125,3 +127,20 @@ It means having the control flexibility to perform the most appropriate problem-
 "blackboards are particularly effective when there are many steps towards the solution and many potential paths involving those steps."
 
 cite:Craig1988
+
+"develop an open-source platform based on the blackboard architecture that the users can extend by adding new-experts to the poetry generation process"
+
+"make an interactive platform which allow human experts to participate in the generalisation process and add their phrases to the blackboard"
+
+cite:misztal2016
+
+Jeff Noon - fiction of AI
+Agents braking away - Springer
+
+* John Hollande - hidden order
+- short simple read
+- soup agent finding
+
+* How to get a PhD in AI
+Programming langauges
+Alan Bundey
