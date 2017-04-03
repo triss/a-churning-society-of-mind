@@ -1,0 +1,30 @@
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#testing][Testing]]
+   - [[#a-very-simple-function][A very simple function]]
+
+* Testing
+** A very simple function
+
+ Hello.
+
+ #+BEGIN_SRC clojure :noweb-ref sum-components
+   (+ (rand) (rand) 30)
+ #+END_SRC
+
+
+ #+BEGIN_SRC clojure :noweb-ref experts
+   (def sum-expert
+     {:pre-condition #(->> (filter number? (:numbers %))
+                           (count)
+                           (> 2))
+      :action        #(assoc :sum (reduce + (:numbers %)))
+      :priority      10})
+
+
+   (def rand-expert
+     {:pre-condition #(not-empty %)
+      :action        #(update-in :numbers conj (rand))
+      :priority      1})
+ #+END_SRC

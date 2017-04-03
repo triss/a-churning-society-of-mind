@@ -13,7 +13,6 @@
    - [[#other-stuff][Other stuff]]
    - [[#updating-the-blackboard][Updating the blackboard]]
      - [[#scheduling][Scheduling]]
-     - [[#tracking-history-and-performing-actions][Tracking history and performing actions]]
    - [[#whats-next][What's next?]]
      - [[#building-serendipitous-circumstances-and-automatically-leveraging-them][building serendipitous circumstances and automatically leveraging them]]
      - [[#do-some-actual-reading][Do some actual reading]]
@@ -216,8 +215,6 @@ Here scheduling is handled by a function that takes a blackboard, finds the expe
 There are probably a million and one ways to schedule things.
 
 I think it might make sense to keep things as simple as possible at this level and let experts handle scheduling inside system.
-
-*** Tracking history and performing actions 
 
 ** What's next?
 *** building serendipitous circumstances and automatically leveraging them

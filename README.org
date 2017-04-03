@@ -78,6 +78,23 @@ target/a-churning-society-of-mind-<<version>>.js
 [org.clojure/clojure "1.9.0-alpha14"]
 #+END_SRC
 
+#+BEGIN_SRC clojure :noweb-ref dep-chesire
+[cheshire "5.7.0"]
+#+END_SRC
+
+#+BEGIN_SRC clojure :noweb-ref dep-nlp
+[damionjunk/nlp  "0.3.0"]
+#+END_SRC
+
+
+
+#+BEGIN_SRC clojure :noweb-ref dep-java
+  ;; jsoup - for cleaning up HTML
+  [org.jsoup/jsoup "1.10.2"]
+
+  ;; standford Core-NLP - natural language processing
+  [edu.stanford.nlp/stanford-corenlp "3.7.0"]
+#+END_SRC
 **** [[https://github.com/clojure/clojurescript][ClojureScript]]
 #+BEGIN_SRC clojure :noweb-ref dep-cljs
 [org.clojure/clojurescript "1.9.495"]
@@ -163,7 +180,10 @@ in the REPL via =(require 'a-churning-society-of-mind... :reload)= or similar.
     :min-lein-vesion "2.4.0"
 
     :dependencies [<<dep-clj>>
-                   <<dep-cljs>>]
+                   <<dep-cljs>>
+                   <<dep-chesire>>
+                   <<dep-nlp>>
+                   <<dep-java>>]
 
     :profiles     {:dev {:dependencies [<<dep-criterium>>]
                          :plugins [<<dep-cljsbuild>>

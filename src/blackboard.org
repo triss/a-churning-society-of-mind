@@ -13,7 +13,6 @@
    - [[#problems][Problems]]
    - [[#why][Why?]]
  - [[#john-hollande---hidden-order][John Hollande - hidden order]]
- - [[#how-to-get-a-phd-in-ai][How to get a PhD in AI]]
 
 * The blackboard model
 
@@ -141,6 +140,3 @@ Agents braking away - Springer
 - short simple read
 - soup agent finding
 
-* How to get a PhD in AI
-Programming langauges
-Alan Bundey

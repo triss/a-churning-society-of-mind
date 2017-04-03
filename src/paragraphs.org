@@ -1,13 +1,18 @@
 * The blackboard model
 
-The ``blackboard approach was designed as a means for dealing with ill-defined, complex applications'' and cite:Craig1988, has ``a potential to be used in simulating cognitive processes such as creativity'' cite:Misztal2014 and some even think that similar systems may ``account, ultimately, for original thought itself.'' cite:Wiggins
+The ``blackboard approach was designed as a means for dealing with ill-defined, complex applications'' cite:Craig1988, and has ``a potential to be used in simulating cognitive processes such as creativity'' cite:Misztal2014 whilst some even believe that systems with similar qualities may ``account, ultimately, for original thought itself.'' cite:Wiggins
 
-Over the past decade computational creativity researchers have looked to utilise the model in a several domains including discovering mathematical theorems in the GC toolkit cite:charnley2008, story generation in Slant cite:Montfort2013 and Misztal and Indurkhya structured a poetry generation around it cite:Misztal2014 .
+Over the past decade computational creativity researchers have looked to utilise the model in several domains including discovering mathematical theorems in the GC toolkit cite:charnley2008, story generation in Slant cite:Montfort2013 and Misztal and Indurkhya structured a poetry generation system around it cite:Misztal2014 .
 
-Misztal-Radecka and Indurkhya have recently recommended that an ``open-source platform based on the blackboard architecture be produced'' cite:misztal2016. Whilst they recommends this system be focused on poetry generation Charnley  and Colton note that ``it is imperative that generic frameworks are developed if the field of combining reasoning systems is to progress.'' cite:Charnley2008 
+* TODO What does GC stand for
 
-Work is progressing in this area and systems such as FloWr cite:Charnley2014 and ConCreTeFlows cite:Znidar2016 have begun to address this issue within the field of computational creativity. These systems behave similarly and provide much the same functionality despite having different design goals. 
-The blackboard model provides and alternative and potentially more expressive means of structuring systems than these two workflow (or perhaps more accurately in one of the systems case's pipeline) based systems.
+* TODO Split sentances
+** Tense
+
+ Misztal-Radecka and Indurkhya have recently recommended that an ``open-source platform based on the blackboard architecture be produced'' cite:misztal2016. Whilst they recommends this system be focused on poetry generation Charnley  and Colton note that ``it is imperative that generic frameworks are developed if the field of combining reasoning systems is to progress.'' cite:Charnley2008 
+
+ Work is progressing in this area and systems such as FloWr cite:Charnley2014 and ConCreTeFlows cite:Znidar2016 have begun to address this issue within the field of computational creativity. These systems behave similarly and provide much the same functionality despite having different design goals. 
+ The blackboard model provides and alternative and potentially more expressive means of structuring systems than these two workflow based system (or perhaps more accurately in one of the systems case's pipeline) systems.
 
 * How it works
 

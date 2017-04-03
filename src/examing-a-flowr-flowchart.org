@@ -1,0 +1,72 @@
+* FloWr flowchart analysis
+
+** 236 - Guardian Illustrated
+*** Guardian
+**** Use
+Returns 100 articles from Guardian corpus.
+
+#+BEGIN_SRC clojure :noweb-ref guardian-spec
+  (s/def :guardian/section #{"all" "world" "uk" "politics" "sport" "culture"
+                             "artanddesign" "travel" "education" "money"
+                             "fashion" "travel" "law" "music" "football"
+                             "business" "technology"})
+
+  (s/def :guardian/article string?)
+
+  ;; TODO fix regex
+  (s/def ::date (s/and string? #(re-matches #"dd-mm-yyyy")))
+
+  (s/fspec guardian-from-flow-chart
+           :args (s/cat :section :guardian/section
+                        :n pos-int?
+                        :start-date ::date
+                        :end-date ::date)
+           :ret (s/coll-of :guardian/article))
+#+END_SRC
+**** Web service implimentation
+
+     We use the API described here: http://open-platform.theguardian.com/documentation/search
+
+#+BEGIN_SRC clojure :noweb-ref guardian-web-service-wrapper
+  (ns a-churning-society-of-mind.guardian
+    (:require [cheshire.core :as cheshire]
+              [clojure.string :as str]
+              [clojure.spec :as s])
+    (:import (org.jsoup Jsoup)))
+
+  (s/def :guardian/body string?)
+  (s/def :guardian/headline string?)
+
+  (s/def :guardian/result
+    (s/keys :req-un [:guardian/body
+                     :guardian/headline]))
+
+  (s/fdef guardian
+          :args (s/cat :query string? :n pos-int?)
+          :ret (s/coll-of :guardian/result))
+
+  (defn parse-result
+    [result]
+    {:body     (.text (Jsoup/parse (get-in result ["fields" "body"])))
+     :headline (get-in result ["fields" "headline"])})
+
+  (defn guardian
+    [query n]
+    (->> (-> (str "http://content.guardianapis.com/search?"
+                  "show-fields=body,headline"
+                  "&page-size=" n
+                  "&q=" (str/escape query {\  "%20"})
+                  "&api-key=6b8ba3a3-2cc9-464f-988f-734c780d69ed")
+             (slurp)
+             (cheshire/parse-string)
+             (get-in ["response" "results"]))
+         (map parse-result)))
+#+END_SRC
+
+
+**** HTML clean up
+We'll use Jsoup for that
+*** SentimentSorter
+Sorts them by valency
+ArrayList<String>
+*** TextRandKeyPhraseExtractor

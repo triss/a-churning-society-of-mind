@@ -1,0 +1,59 @@
+* Related concepts
+** Qualia 
+the immediate experiential aspects of sensations.
+to offer some crude examples, the particular redness of the red of an apple, or the coldness of ice. Some authors even extend the concept of qualia to our most basic thoughts and drives.
+
+** Cybernetics 
+studies how information circulates - the general science of communication and control in natural and artificial systems
+
+*** Cognitivist 
+ Computer as metaphor for human mind. 
+ The mind translates the components of the external world in to internal representations. 
+ The mind manipulates internal symbolic representations using rules to produce outputs.
+ Symbols are manipulated without interpreting there meaning.
+
+*** Connectionist
+
+ Developed in the 1980s.
+
+ Mind is a network of interconnected units.
+ Artificial neurons running in parallel.
+ Mental representations not discussed in terms of symbols.
+ Instead in terms of links among distributed, co-operative, self-organising agents.
+**** bottom up approach
+***** Dennett and Hofstadter
+
+**** Marvin Minksy
+
+the cognitive system as a society of micro-agents that are capable of solving problems locally.
+Connectionists therefore believe that the analysis must penetrate down inside symbolic operations, to the “sub-symbolic” level.
+
+The brains main activity consists of performing modifications on itself.
+
+The brain is a machine whose processes constantly alter its subsequent operation.
+
+In the brain the results of processes become the processes themselves.
+
+*** Difference between cognivitism and connectionism
+
+Alogorithms don't act sequentially
+No central processing units
+Networks of neurons capable of managing selves
+
+Connectionists believe analysis must penetrate down inside symbolic operations, to the “sub-symbolic” level.
+
+Neuron's aren't programmed but trained.
+
+Representation is a correspondance between an emergent global state and properties of the external world.
+
+*** Neural networks are trained not programmed
+
+*** Functionalism 
+
+ Envisons the human mind in terms of causal relations among internal states. 
+
+ Software is independent of hardware
+ and can be installed on various systems
+ programmers can adapt the software's essence such that it can run on multiple machines.
+
+ Mind is organised in to specialised modules.

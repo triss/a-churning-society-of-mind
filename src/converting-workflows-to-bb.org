@@ -25,6 +25,12 @@ Therefore a re-repesentation of a FloWr workflow into a blackboard will always h
 /more expressive power/ - /a larger domain of operation/ - /can potentially generate more stuff/ - ????
 than the workflow they encode.
 
+The /set of/ artefacts produced by a Blackboard of a the same concept 
+include all that workflow did and more stuff
+
+foundation of computation
+
+
 * Assumption
 
 The persistence of node ordering will be achieved by ensuring all nodes 
