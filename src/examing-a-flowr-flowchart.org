@@ -23,13 +23,18 @@ Returns 100 articles from Guardian corpus.
                         :end-date ::date)
            :ret (s/coll-of :guardian/article))
 #+END_SRC
-**** Web service implimentation
 
-     We use the API described here: http://open-platform.theguardian.com/documentation/search
+**** Web service wrapper
+
+We use the API described here: http://open-platform.theguardian.com/documentation/search
+To retrieve guardian articles.
+We could wrap much more of functionality.
+This only alHlows 
 
 #+BEGIN_SRC clojure :noweb-ref guardian-web-service-wrapper
   (ns a-churning-society-of-mind.guardian
     (:require [cheshire.core :as cheshire]
+              [damionjunk.nlp.stanford :as nl]
               [clojure.string :as str]
               [clojure.spec :as s])
     (:import (org.jsoup Jsoup)))
@@ -41,7 +46,7 @@ Returns 100 articles from Guardian corpus.
     (s/keys :req-un [:guardian/body
                      :guardian/headline]))
 
-  (s/fdef guardian
+  (s/fdef search
           :args (s/cat :query string? :n pos-int?)
           :ret (s/coll-of :guardian/result))
 
@@ -50,11 +55,10 @@ Returns 100 articles from Guardian corpus.
     {:body     (.text (Jsoup/parse (get-in result ["fields" "body"])))
      :headline (get-in result ["fields" "headline"])})
 
-  (defn guardian
-    [query n]
+  (defn search
+    [query]
     (->> (-> (str "http://content.guardianapis.com/search?"
                   "show-fields=body,headline"
-                  "&page-size=" n
                   "&q=" (str/escape query {\  "%20"})
                   "&api-key=6b8ba3a3-2cc9-464f-988f-734c780d69ed")
              (slurp)
@@ -64,8 +68,12 @@ Returns 100 articles from Guardian corpus.
 #+END_SRC
 
 
-**** HTML clean up
-We'll use Jsoup for that
+***** HTML clean up
+We'll use Jsoup for that.
+When does it make sense to dump HTML representation of body?
+HTML clean up module would be useful.
+
+
 *** SentimentSorter
 Sorts them by valency
 ArrayList<String>
