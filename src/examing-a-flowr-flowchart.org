@@ -28,53 +28,181 @@ Returns 100 articles from Guardian corpus.
 
 We use the API described here: http://open-platform.theguardian.com/documentation/search
 To retrieve guardian articles.
-We could wrap much more of functionality.
-This only alHlows 
+We could wrap much more of functionality. 
+Is there an automated means of constructing query? No WSDL for Guardian service appears to be available online.
 
-#+BEGIN_SRC clojure :noweb-ref guardian-web-service-wrapper
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.guardian
-    (:require [cheshire.core :as cheshire]
-              [damionjunk.nlp.stanford :as nl]
-              [clojure.string :as str]
+    (:require [clj-http.client :as client]
+              [clojure.spec :as s]))
+
+  (s/def :guardian/result map?)
+
+  (s/fdef search
+          :args (s/cat :query string?)
+          :ret (s/coll-of :guardian/result))
+
+  (defn search
+    "Perform search using Guardian API. Returns articles that match query."
+    [query]
+    (-> (client/get "http://content.guardianapis.com/search"
+                    {:as           :json
+                     :query-params {"q"           query
+                                    "api-key"     "6b8ba3a3-2cc9-464f-988f-734c780d69ed"
+                                    "show-fields" "headline,body"}})
+        (get-in [:body :response :results])))
+
+  (s/fdef result->body-html
+          :args (s/cat :guardian/result)
+          :ret :html/document)
+
+  (defn result->body-html
+    "Extract body HTML from result."
+    [result] (-> result :fields :body))
+#+END_SRC
+
+***** HTML clean up
+
+We'll use Jsoup for that.
+When does it make sense to dump HTML representation of body?
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/html.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.html
+    (:require [clojure.spec :as s])
+    (:import (org.jsoup Jsoup)))
+
+  (s/def :html/document string?)
+  (s/def :text/document string?)
+
+  (s/fdef strip-tags
+          :args (s/cat :s :html/document)
+          :ret :text/document)
+
+  (defn strip-tags
+    "Removes HTML tags from string."
+    [s] (.text (Jsoup/parse s)))
+#+END_SRC
+
+*** SentimentSorter
+
+Sorts incoming documents by valency.
+ArrayList<String>
+
+**** My implementation 
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/core-nlp-sentiment.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.core-nlp-sentiment
+    (:require [damionjunk.nlp.stanford :as nlp]
+              [incanter.stats :as stats]
               [clojure.spec :as s])
     (:import (org.jsoup Jsoup)))
 
-  (s/def :guardian/body string?)
-  (s/def :guardian/headline string?)
+  (s/def ::sentiment (s/and int? #(> 0 % 5)))
+  (s/def ::text string?)
 
-  (s/def :guardian/result
-    (s/keys :req-un [:guardian/body
-                     :guardian/headline]))
+  (s/fdef analyze-sentences
+          :args (s/cat :s string?)
+          :ret (s/coll-of (s/keys :req-un [::sentiment ::text])))
+
+  (defn analyze-sentences
+    [s] (nlp/sentiment-maps s))
+
+  (defn text-stats
+    [text]
+    (let [sentiments (analyze-sentences text)
+          ss         (map :sentiment sentiments)]
+      {:text      text
+       :sentiment {:sd        (stats/sd ss)
+                   :mean      (stats/mean ss)
+                   :variance  (stats/variance ss)
+                   :sentences sentiment}}))
+#+END_SRC
+
+*** TextRandKeyPhraseExtractor
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/text-rank.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.text-rank
+    (:import (java.io StringReader)
+             (edu.stanford.nlp.process PTBTokenizer DocumentPreprocessor)
+             (edu.stanford.nlp.ling Word))
+    (:require [clojure.string :as str]))
+
+  (defonce d 0.85)
+
+  (defn tokenize [s]
+    (.tokenize
+     (PTBTokenizer/newPTBTokenizer
+      (StringReader. s))))
+
+  (defn parse-text [t]
+    "Splits a text into a sequence of sentences
+     represented as sequences of Words."
+    (let [r (StringReader. t)]
+      (map #(vec (map str %))
+           (iterator-seq
+            (.iterator
+             (DocumentPreprocessor. r))))))
+
+  (def overlap
+    (memoize (fn [s]
+               (clojure.set/intersection (first s) (second s)))))
+
+  (defn score [ws]
+    (fn [s]
+      (+ (- 1 d)
+         (* d (reduce #(+ %1 (/ (count (overlap #{s %2}))
+                                (+ (Math/log (count s))
+                                   (Math/log (count %2)))))
+                      0
+                      (disj ws s))))))
+
+  (defn rank [text]
+    (let [msgs   (parse-text text)
+          sets   (map set msgs)
+          scorer (score (set sets))
+          scored (reduce #(assoc %1 %2 (scorer (set %2)))
+                         {}
+                         msgs)
+          sorted (sort-by val > scored)]
+     sorted))
+
+  (defn ranked-word->sentence
+    [rw] (str/join " " (first rw)))
+#+END_SRC
+
+** Flickr
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/flickr.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.flickr
+    (:require [clojure.spec :as s]
+              [clj-http.client :as client]))
+
+  (s/def :flickr/photo-def
+    (s/keys :req-un [:flickr/id :flickr/farm :flickr/server :flickr/secret]))
+
+  (s/def ::image any?)
 
   (s/fdef search
-          :args (s/cat :query string? :n pos-int?)
-          :ret (s/coll-of :guardian/result))
-
-  (defn parse-result
-    [result]
-    {:body     (.text (Jsoup/parse (get-in result ["fields" "body"])))
-     :headline (get-in result ["fields" "headline"])})
+          :args (s/cat :s string?)
+          :ret (s/coll-of :flickr/photo-def))
 
   (defn search
     [query]
-    (->> (-> (str "http://content.guardianapis.com/search?"
-                  "show-fields=body,headline"
-                  "&q=" (str/escape query {\  "%20"})
-                  "&api-key=6b8ba3a3-2cc9-464f-988f-734c780d69ed")
-             (slurp)
-             (cheshire/parse-string)
-             (get-in ["response" "results"]))
-         (map parse-result)))
+    (-> (client/get "https://api.flickr.com/services/rest/"
+                    {:as           :json
+                     :query-params {"api_key"        "dd70dc76f6998112861f8fdfabf92fd9"
+                                    "method"         "flickr.photos.search"
+                                    "text"           query
+                                    "format"         "json"
+                                    "nojsoncallback" 1}})
+        (get-in [:body :photos :photo])))
+
+  (s/fdef get-photo
+          :args (s/cat :photo-def ::flickr/photo-def)
+          :ret ::image)
+
+  (defn get-photo
+    [{:keys [id farm server secret]}]
+    (client/get (str "https://farm" farm ".staticflickr.com/"
+                     server "/" id "_" secret ".jpg")))
 #+END_SRC
-
-
-***** HTML clean up
-We'll use Jsoup for that.
-When does it make sense to dump HTML representation of body?
-HTML clean up module would be useful.
-
-
-*** SentimentSorter
-Sorts them by valency
-ArrayList<String>
-*** TextRandKeyPhraseExtractor
