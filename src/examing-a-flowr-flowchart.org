@@ -1,4 +1,27 @@
- :mean))
+#+SETUPFILE: setup.org
+
+* Contents                                                         :toc_3_gh:
+ - [[#flowr-flowchart][FloWr flowchart]]
+   - [[#236---guardian-illustrated][236 - Guardian Illustrated]]
+     - [[#modules][Modules]]
+
+* FloWr flowchart 
+** 236 - Guardian Illustrated
+   
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian_illustrated.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.guardian-illustrated
+    (:require [a-churning-society-of-mind.guardian :as guardian]
+              [a-churning-society-of-mind.html :as html]
+              [a-churning-society-of-mind.flickr :as flickr]
+              [a-churning-society-of-mind.core-nlp-sentiment :as sentiment]
+              [a-churning-society-of-mind.text-rank :as key-phrase]))
+
+  (defn p [x] (clojure.pprint/pprint x) x)
+
+
+  (->> (guardian/search "Corbyn")
+       (map #(-> % guardian/result->body-html html/strip-tags sentiment/text-stats))
+       (sort-by #(-> % :sentiment :mean))
        (first)
        (:text)
        (key-phrase/rank)
