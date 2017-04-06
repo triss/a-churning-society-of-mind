@@ -20,17 +20,12 @@
 
   (defn p [x] (clojure.pprint/pprint x) x)
 
-
   (->> (guardian/search "Corbyn")
-       (map #(-> % guardian/result->body-html html/strip-tags sentiment/text-stats))
-       (sort-by #(-> % :sentiment :mean))
-       (first)
-       (:text)
+       (map #(-> % guardian/result->body-html html/strip-tags))
+       (sentiment/most-miserable-text)
        (key-phrase/rank)
-       (map #(-> % key-phrase/ranked-word->sentence sentiment/text-stats))
-       (sort-by #(-> % :sentiment :mean))
-       (first)
-       (:text)
+       (map #(-> % key-phrase/ranked-word->sentence))
+       (sentiment/most-miserable-text)
        ;(flickr/search)
        ;(rand-nth)
        ;(flickr/get-photo)
@@ -39,7 +34,6 @@
 
 ** Modules
 *** Guardian
-**** Use
 Returns 100 articles from Guardian corpus.
 
 #+BEGIN_SRC clojure :noweb-ref guardian-spec
@@ -125,8 +119,6 @@ When does it make sense to dump HTML representation of body?
 Sorts incoming documents by valency.
 ArrayList<String>
 
-**** My implementation 
-
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/core_nlp_sentiment.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.core-nlp-sentiment
     (:require [damionjunk.nlp.stanford :as nlp]
@@ -153,6 +145,25 @@ ArrayList<String>
                    :mean      (stats/mean ss)
                    :variance  (stats/variance ss)
                    :sentences sentiments}}))
+
+  <<most-miserable-text>>
+#+END_SRC
+
+**** Most miserable text
+
+Although not visible on the Guardrian Illustrated workflow visualisation the workflow uses the same piece of logic twice to select the most miserable text.
+
+#+BEGIN_SRC clojure :noweb-ref most-miserable-text
+  (s/fdef most-miserable-text
+          :args (s/cat :texts (s/coll-of (s/keys [::sentiment ::text])))
+          :ret ::text)
+
+  (defn most-miserable-text
+    [texts]
+    (->> (map text-stats texts)
+         (sort-by #(get-in % [:sentiment :mean]))
+         (first)
+         (:text)))
 #+END_SRC
 
 *** TextRandKeyPhraseExtractor
