@@ -1,12 +1,14 @@
 #+SETUPFILE: setup.org
 
 * Contents                                                         :toc_3_gh:
- - [[#flowr-flowchart][FloWr flowchart]]
-   - [[#236---guardian-illustrated][236 - Guardian Illustrated]]
-     - [[#modules][Modules]]
+ - [[#236---guardian-illustrated][236 - Guardian Illustrated]]
+   - [[#modules][Modules]]
+     - [[#guardian][Guardian]]
+     - [[#sentimentsorter][SentimentSorter]]
+     - [[#textrandkeyphraseextractor][TextRandKeyPhraseExtractor]]
+     - [[#flickr][Flickr]]
 
-* FloWr flowchart 
-** 236 - Guardian Illustrated
+* 236 - Guardian Illustrated
    
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian_illustrated.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.guardian-illustrated
@@ -35,177 +37,177 @@
        )
 #+END_SRC
 
-*** Modules
-**** Guardian
-***** Use
- Returns 100 articles from Guardian corpus.
+** Modules
+*** Guardian
+**** Use
+Returns 100 articles from Guardian corpus.
 
- #+BEGIN_SRC clojure :noweb-ref guardian-spec
-   (s/def :guardian/section #{"all" "world" "uk" "politics" "sport" "culture"
-                              "artanddesign" "travel" "education" "money"
-                              "fashion" "travel" "law" "music" "football"
-                              "business" "technology"})
+#+BEGIN_SRC clojure :noweb-ref guardian-spec
+  (s/def :guardian/section #{"all" "world" "uk" "politics" "sport" "culture"
+                             "artanddesign" "travel" "education" "money"
+                             "fashion" "travel" "law" "music" "football"
+                             "business" "technology"})
 
-   (s/def :guardian/article string?)
+  (s/def :guardian/article string?)
 
-   ;; TODO fix regex
-   (s/def ::date (s/and string? #(re-matches #"dd-mm-yyyy")))
+  ;; TODO fix regex
+  (s/def ::date (s/and string? #(re-matches #"dd-mm-yyyy")))
 
-   (s/fspec guardian-from-flow-chart
-            :args (s/cat :section :guardian/section
-                         :n pos-int?
-                         :start-date ::date
-                         :end-date ::date)
-            :ret (s/coll-of :guardian/article))
- #+END_SRC
+  (s/fspec guardian-from-flow-chart
+           :args (s/cat :section :guardian/section
+                        :n pos-int?
+                        :start-date ::date
+                        :end-date ::date)
+           :ret (s/coll-of :guardian/article))
+#+END_SRC
 
-***** Web service wrapper
+**** Web service wrapper
 
- We use the API described here: http://open-platform.theguardian.com/documentation/search
- To retrieve guardian articles.
- We could wrap much more of functionality. 
- Is there an automated means of constructing query? No WSDL for Guardian service appears to be available online.
+We use the API described here: http://open-platform.theguardian.com/documentation/search
+To retrieve guardian articles.
+We could wrap much more of functionality. 
+Is there an automated means of constructing query? No WSDL for Guardian service appears to be available online.
 
- #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian.cljc :noweb yes :mkdirp yes :padline no
-   (ns a-churning-society-of-mind.guardian
-     (:require [clj-http.client :as client]
-               [clojure.spec :as s]))
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.guardian
+    (:require [clj-http.client :as client]
+              [clojure.spec :as s]))
 
-   (s/def :guardian/result map?)
+  (s/def :guardian/result map?)
 
-   (s/fdef search
-           :args (s/cat :query string?)
-           :ret (s/coll-of :guardian/result))
+  (s/fdef search
+          :args (s/cat :query string?)
+          :ret (s/coll-of :guardian/result))
 
-   (defn search
-     "Perform search using Guardian API. Returns articles that match query."
-     [query]
-     (-> (client/get "http://content.guardianapis.com/search"
-                     {:as           :json
-                      :query-params {"q"           query
-                                     "api-key"     "6b8ba3a3-2cc9-464f-988f-734c780d69ed"
-                                     "show-fields" "headline,body"}})
-         (get-in [:body :response :results])))
+  (defn search
+    "Perform search using Guardian API. Returns articles that match query."
+    [query]
+    (-> (client/get "http://content.guardianapis.com/search"
+                    {:as           :json
+                     :query-params {"q"           query
+                                    "api-key"     "6b8ba3a3-2cc9-464f-988f-734c780d69ed"
+                                    "show-fields" "headline,body"}})
+        (get-in [:body :response :results])))
 
-   (s/fdef result->body-html
-           :args (s/cat :result :guardian/result)
-           :ret :html/document)
+  (s/fdef result->body-html
+          :args (s/cat :result :guardian/result)
+          :ret :html/document)
 
-   (defn result->body-html
-     "Extract body HTML from result."
-     [result] (-> result :fields :body))
- #+END_SRC
+  (defn result->body-html
+    "Extract body HTML from result."
+    [result] (-> result :fields :body))
+#+END_SRC
 
-****** HTML clean up
+***** HTML clean up
 
- We'll use Jsoup for that.
- When does it make sense to dump HTML representation of body?
+We'll use Jsoup for that.
+When does it make sense to dump HTML representation of body?
 
- #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/html.cljc :noweb yes :mkdirp yes :padline no
-   (ns a-churning-society-of-mind.html
-     (:require [clojure.spec :as s])
-     (:import (org.jsoup Jsoup)))
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/html.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.html
+    (:require [clojure.spec :as s])
+    (:import (org.jsoup Jsoup)))
 
-   (s/def :html/document string?)
-   (s/def :text/document string?)
+  (s/def :html/document string?)
+  (s/def :text/document string?)
 
-   (s/fdef strip-tags
-           :args (s/cat :s :html/document)
-           :ret :text/document)
+  (s/fdef strip-tags
+          :args (s/cat :s :html/document)
+          :ret :text/document)
 
-   (defn strip-tags
-     "Removes HTML tags from string."
-     [s] (.text (Jsoup/parse s)))
- #+END_SRC
+  (defn strip-tags
+    "Removes HTML tags from string."
+    [s] (.text (Jsoup/parse s)))
+#+END_SRC
 
-**** SentimentSorter
+*** SentimentSorter
 
- Sorts incoming documents by valency.
- ArrayList<String>
+Sorts incoming documents by valency.
+ArrayList<String>
 
-***** My implementation 
+**** My implementation 
 
- #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/core_nlp_sentiment.cljc :noweb yes :mkdirp yes :padline no
-   (ns a-churning-society-of-mind.core-nlp-sentiment
-     (:require [damionjunk.nlp.stanford :as nlp]
-               [incanter.stats :as stats]
-               [clojure.spec :as s])
-     (:import (org.jsoup Jsoup)))
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/core_nlp_sentiment.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.core-nlp-sentiment
+    (:require [damionjunk.nlp.stanford :as nlp]
+              [incanter.stats :as stats]
+              [clojure.spec :as s])
+    (:import (org.jsoup Jsoup)))
 
-   (s/def ::sentiment (s/and int? #(> 0 % 5)))
-   (s/def ::text string?)
+  (s/def ::sentiment (s/and int? #(> 0 % 5)))
+  (s/def ::text string?)
 
-   (s/fdef analyze-sentences
-           :args (s/cat :s string?)
-           :ret (s/coll-of (s/keys :req-un [::sentiment ::text])))
+  (s/fdef analyze-sentences
+          :args (s/cat :s string?)
+          :ret (s/coll-of (s/keys :req-un [::sentiment ::text])))
 
-   (defn analyze-sentences
-     [s] (nlp/sentiment-maps s))
+  (defn analyze-sentences
+    [s] (nlp/sentiment-maps s))
 
-   (defn text-stats
-     [text]
-     (let [sentiments (analyze-sentences text)
-           ss         (map :sentiment sentiments)]
-       {:text      text
-        :sentiment {:sd        (stats/sd ss)
-                    :mean      (stats/mean ss)
-                    :variance  (stats/variance ss)
-                    :sentences sentiments}}))
- #+END_SRC
+  (defn text-stats
+    [text]
+    (let [sentiments (analyze-sentences text)
+          ss         (map :sentiment sentiments)]
+      {:text      text
+       :sentiment {:sd        (stats/sd ss)
+                   :mean      (stats/mean ss)
+                   :variance  (stats/variance ss)
+                   :sentences sentiments}}))
+#+END_SRC
 
-**** TextRandKeyPhraseExtractor
+*** TextRandKeyPhraseExtractor
 
- #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/text_rank.cljc :noweb yes :mkdirp yes :padline no
-   (ns a-churning-society-of-mind.text-rank
-     (:import (java.io StringReader)
-              (edu.stanford.nlp.process PTBTokenizer DocumentPreprocessor)
-              (edu.stanford.nlp.ling Word))
-     (:require [clojure.string :as str]))
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/text_rank.cljc :noweb yes :mkdirp yes :padline no
+  (ns a-churning-society-of-mind.text-rank
+    (:import (java.io StringReader)
+             (edu.stanford.nlp.process PTBTokenizer DocumentPreprocessor)
+             (edu.stanford.nlp.ling Word))
+    (:require [clojure.string :as str]))
 
-   (defonce d 0.85)
+  (defonce d 0.85)
 
-   (defn tokenize [s]
-     (.tokenize
-      (PTBTokenizer/newPTBTokenizer
-       (StringReader. s))))
+  (defn tokenize [s]
+    (.tokenize
+     (PTBTokenizer/newPTBTokenizer
+      (StringReader. s))))
 
-   (defn parse-text [t]
-     "Splits a text into a sequence of sentences
-      represented as sequences of Words."
-     (let [r (StringReader. t)]
-       (map #(vec (map str %))
-            (iterator-seq
-             (.iterator
-              (DocumentPreprocessor. r))))))
+  (defn parse-text [t]
+    "Splits a text into a sequence of sentences
+     represented as sequences of Words."
+    (let [r (StringReader. t)]
+      (map #(vec (map str %))
+           (iterator-seq
+            (.iterator
+             (DocumentPreprocessor. r))))))
 
-   (def overlap
-     (memoize (fn [s]
-                (clojure.set/intersection (first s) (second s)))))
+  (def overlap
+    (memoize (fn [s]
+               (clojure.set/intersection (first s) (second s)))))
 
-   (defn score [ws]
-     (fn [s]
-       (+ (- 1 d)
-          (* d (reduce #(+ %1 (/ (count (overlap #{s %2}))
-                                 (+ (Math/log (count s))
-                                    (Math/log (count %2)))))
-                       0
-                       (disj ws s))))))
+  (defn score [ws]
+    (fn [s]
+      (+ (- 1 d)
+         (* d (reduce #(+ %1 (/ (count (overlap #{s %2}))
+                                (+ (Math/log (count s))
+                                   (Math/log (count %2)))))
+                      0
+                      (disj ws s))))))
 
-   (defn rank [text]
-     (let [msgs   (parse-text text)
-           sets   (map set msgs)
-           scorer (score (set sets))
-           scored (reduce #(assoc %1 %2 (scorer (set %2)))
-                          {}
-                          msgs)
-           sorted (sort-by val > scored)]
-      sorted))
+  (defn rank [text]
+    (let [msgs   (parse-text text)
+          sets   (map set msgs)
+          scorer (score (set sets))
+          scored (reduce #(assoc %1 %2 (scorer (set %2)))
+                         {}
+                         msgs)
+          sorted (sort-by val > scored)]
+     sorted))
 
-   (defn ranked-word->sentence
-     [rw] (str/join " " (first rw)))
- #+END_SRC
+  (defn ranked-word->sentence
+    [rw] (str/join " " (first rw)))
+#+END_SRC
 
-**** Flickr
+*** Flickr
 
 Use Flickr's search API https://www.flickr.com/services/api/flickr.photos.search.html
 
@@ -237,7 +239,7 @@ Use Flickr's search API https://www.flickr.com/services/api/flickr.photos.search
     <<flickr-get-photo>>
   #+END_SRC
 
-***** Get photo
+**** Get photo
 
 Images are fetched using Photo Source URL constructed as described here:
 https://www.flickr.com/services/api/misc.urls.html
