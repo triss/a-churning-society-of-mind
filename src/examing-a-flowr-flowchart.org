@@ -2,10 +2,11 @@
 
 * Contents                                                         :toc_3_gh:
  - [[#236---guardian-illustrated][236 - Guardian Illustrated]]
+   - [[#representations][Representations]]
    - [[#modules][Modules]]
      - [[#guardian][Guardian]]
      - [[#sentimentsorter][SentimentSorter]]
-     - [[#textrandkeyphraseextractor][TextRandKeyPhraseExtractor]]
+     - [[#textrankkeyphraseextractor][TextRankKeyPhraseExtractor]]
      - [[#flickr][Flickr]]
 
 * 236 - Guardian Illustrated
@@ -16,44 +17,37 @@
               [a-churning-society-of-mind.html :as html]
               [a-churning-society-of-mind.flickr :as flickr]
               [a-churning-society-of-mind.core-nlp-sentiment :as sentiment]
-              [a-churning-society-of-mind.text-rank :as key-phrase]))
+              [a-churning-society-of-mind.text-rank :as text-rank]
+              [clojure.java.io :as io]))
 
-  (defn p [x] (clojure.pprint/pprint x) x)
+  (defn guardian-illustrated
+    [text]
+    {:text  text
+     :photo (-> text flickr/search rand-nth flickr/get-photo)})
 
-  (->> (guardian/search "Corbyn")
+  (defn save
+    [{:keys [text photo]}]
+    (with-open [out (io/output-stream (io/file (str text ".jpg")))]
+      (.write  out ^bytes (:body photo))))
+
+  (->> (guardian/search "Trump")
        (map #(-> % guardian/result->body-html html/strip-tags))
        (sentiment/most-miserable-text)
-       (key-phrase/rank)
-       (map #(-> % key-phrase/ranked-word->sentence))
+       (text-rank/key-phrases)
        (sentiment/most-miserable-text)
-       ;(flickr/search)
-       ;(rand-nth)
-       ;(flickr/get-photo)
-       )
+       (guardian-illustrated)
+       (save))
+#+END_SRC
+
+** Representations
+
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/specs.cljc :noweb yes :mkdirp yes :padline no
+
 #+END_SRC
 
 ** Modules
 *** Guardian
 Returns 100 articles from Guardian corpus.
-
-#+BEGIN_SRC clojure :noweb-ref guardian-spec
-  (s/def :guardian/section #{"all" "world" "uk" "politics" "sport" "culture"
-                             "artanddesign" "travel" "education" "money"
-                             "fashion" "travel" "law" "music" "football"
-                             "business" "technology"})
-
-  (s/def :guardian/article string?)
-
-  ;; TODO fix regex
-  (s/def ::date (s/and string? #(re-matches #"dd-mm-yyyy")))
-
-  (s/fspec guardian-from-flow-chart
-           :args (s/cat :section :guardian/section
-                        :n pos-int?
-                        :start-date ::date
-                        :end-date ::date)
-           :ret (s/coll-of :guardian/article))
-#+END_SRC
 
 **** Web service wrapper
 
@@ -64,32 +58,108 @@ Is there an automated means of constructing query? No WSDL for Guardian service 
 
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.guardian
-    (:require [clj-http.client :as client]
+    (:require [clj-http.client :as http]
               [clojure.spec :as s]))
 
-  (s/def :guardian/result map?)
+  (s/def :string/id string?)
+  (s/def :string/status string?)
+  (s/def :string/url string?)
+  (s/def :string/html string?)
+  (s/def :string/text string?)
+  (s/def :string/sentence string?)
+  (s/def :string/token string?)
+  (s/def :string/boolean #{"true" "false"})
+  (s/def :string/date string?)
+  (s/def :string/number string?)
+
+  (s/def :guardian/order #{"newest" "oldest" "relevance"})
+
+  (s/def :guardian-responce/status string?) ; ok etc.
+  (s/def :guardian-responce/total int?)
+  (s/def :guardian-responce/orderBy :guardian/order)
+  (s/def :guardian-responce/results (s/coll-of :guardian/result))
+
+  (s/def :guardian/response
+    (s/keys :opt-un [:guardian-responce/status
+                     :guardian-responce/total
+                     :guardian-responce/orderBy
+                     :guardian-responce/results]))
+
+  (s/def :guardian-result/id :string/id)
+  (s/def :guardian-result/sectionId :string/id)
+  (s/def :guardian-result/sectionName :string/text)
+  (s/def :guardian-result/webPublicationDate :string/date)
+  (s/def :guardian-result/webUrl :string/url)
+  (s/def :guardian-result/apiUrl :string/url)
+
+  (s/def :guardian-result-field/trailTrext :string/html)
+  (s/def :guardian-result-field/headline :string/html)
+  (s/def :guardian-result-field/showInRelatedContent :string/boolean)
+  (s/def :guardian-result-field/body :string/html)
+  (s/def :guardian-result-field/lastModified :string/date)
+  (s/def :guardian-result-field/hadStoryPackage :string/boolean)
+  (s/def :guardian-result-field/score :string/number)
+  (s/def :guardian-result-field/standfirst :string/html)
+  (s/def :guardian-result-field/shortUrl :string/url)
+  (s/def :guardian-result-field/thumbnail :string/url)
+  (s/def :guardian-result-field/wordcount :string/number)
+  (s/def :guardian-result-field/commentable :string/boolean)
+  (s/def :guardian-result-field/isPremoderated :string/boolean)
+  (s/def :guardian-result-field/allowUgc :string/boolean)
+  (s/def :guardian-result-field/byline :string/html)
+  (s/def :guardian-result-field/publication :string/text)
+  (s/def :guardian-result-field/commentCloseDate :string/date)
+  (s/def :guardian-result-field/starRating :string/number)
+
+  (s/def :guadian-result/fields
+    (s/keys :opt-un [:guardian-result-field/trailTrext
+                     :guardian-result-field/headline
+                     :guardian-result-field/showInRelatedContent
+                     :guardian-result-field/body
+                     :guardian-result-field/lastModified
+                     :guardian-result-field/hadStoryPackage
+                     :guardian-result-field/score
+                     :guardian-result-field/standfirst
+                     :guardian-result-field/shortUrl
+                     :guardian-result-field/thumbnail
+                     :guardian-result-field/wordcount
+                     :guardian-result-field/commentable
+                     :guardian-result-field/isPremoderated
+                     :guardian-result-field/allowUgc
+                     :guardian-result-field/byline
+                     :guardian-result-field/commentCloseDate
+                     :guardian-result-field/starRating]))
+
+  (s/def :guardian/result
+    (s/keys :opt-un [:guardian/id
+                     :guardian/sectionId
+                     :guardian/sectionName
+                     :guardian/webPublicationDate
+                     :guardian/webUrl
+                     :guardian/apiUrl
+                     :guardian/fields]))
 
   (s/fdef search
           :args (s/cat :query string?)
-          :ret (s/coll-of :guardian/result))
+          :ret :guardian/response)
 
   (defn search
     "Perform search using Guardian API. Returns articles that match query."
     [query]
-    (-> (client/get "http://content.guardianapis.com/search"
-                    {:as           :json
-                     :query-params {"q"           query
-                                    "api-key"     "6b8ba3a3-2cc9-464f-988f-734c780d69ed"
-                                    "show-fields" "headline,body"}})
+    (-> (http/get "http://content.guardianapis.com/search"
+                  {:as           :json
+                   :query-params {"q"           query
+                                  "api-key"     "6b8ba3a3-2cc9-464f-988f-734c780d69ed"
+                                  "show-fields" "all"}})
         (get-in [:body :response :results])))
 
   (s/fdef result->body-html
           :args (s/cat :result :guardian/result)
-          :ret :html/document)
+          :ret string?)
 
   (defn result->body-html
     "Extract body HTML from result."
-    [result] (-> result :fields :body))
+    [result] (get-in result [:fields :body]))
 #+END_SRC
 
 ***** HTML clean up
@@ -151,7 +221,7 @@ ArrayList<String>
 
 **** Most miserable text
 
-Although not visible on the Guardrian Illustrated workflow visualisation the workflow uses the same piece of logic twice to select the most miserable text.
+Although not visible on the Guardian Illustrated workflow visualisation the workflow uses the same piece of logic twice to select the most miserable text.
 
 #+BEGIN_SRC clojure :noweb-ref most-miserable-text
   (s/fdef most-miserable-text
@@ -166,56 +236,24 @@ Although not visible on the Guardrian Illustrated workflow visualisation the wor
          (:text)))
 #+END_SRC
 
-*** TextRandKeyPhraseExtractor
+*** TextRankKeyPhraseExtractor 
 
-#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/text_rank.cljc :noweb yes :mkdirp yes :padline no
+#+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/text-rank.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.text-rank
-    (:import (java.io StringReader)
-             (edu.stanford.nlp.process PTBTokenizer DocumentPreprocessor)
-             (edu.stanford.nlp.ling Word))
-    (:require [clojure.string :as str]))
+    (:require [clojure.java.shell :as sh]
+              [clojure.string :as str]
+              [clojure.spec :as s])
+    (:import (java.io File)))
 
-  (defonce d 0.85)
-
-  (defn tokenize [s]
-    (.tokenize
-     (PTBTokenizer/newPTBTokenizer
-      (StringReader. s))))
-
-  (defn parse-text [t]
-    "Splits a text into a sequence of sentences
-     represented as sequences of Words."
-    (let [r (StringReader. t)]
-      (map #(vec (map str %))
-           (iterator-seq
-            (.iterator
-             (DocumentPreprocessor. r))))))
-
-  (def overlap
-    (memoize (fn [s]
-               (clojure.set/intersection (first s) (second s)))))
-
-  (defn score [ws]
-    (fn [s]
-      (+ (- 1 d)
-         (* d (reduce #(+ %1 (/ (count (overlap #{s %2}))
-                                (+ (Math/log (count s))
-                                   (Math/log (count %2)))))
-                      0
-                      (disj ws s))))))
-
-  (defn rank [text]
-    (let [msgs   (parse-text text)
-          sets   (map set msgs)
-          scorer (score (set sets))
-          scored (reduce #(assoc %1 %2 (scorer (set %2)))
-                         {}
-                         msgs)
-          sorted (sort-by val > scored)]
-     sorted))
-
-  (defn ranked-word->sentence
-    [rw] (str/join " " (first rw)))
+  (defn key-phrases
+    [s]
+    (let [tmp-file (File/createTempFile "text-for-key-phrases" "txt")]
+      (spit tmp-file s :encoding "ISO-8859-1")
+      (->> (.getAbsolutePath tmp-file)
+           (sh/sh "textrank" "extract_phrases")
+           (:out)
+           (re-seq #"'(.+?)'")
+           (map second))))
 #+END_SRC
 
 *** Flickr
