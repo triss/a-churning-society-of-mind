@@ -1,0 +1,56 @@
+* Porting the Guardian Illustrated workflow FloWr
+
+In order to perform comparative evaluation of the creative potential of different systems architectures we ported a set of modules known to work together as a creative system.
+
+Since the source of the system is unavailable and modules can not be accessed across the internet I had to write the majority of these from scratch or leverage software available as web services, Java libraries or command line tools.
+
+** The Guardian Illustrated workflow
+
+Guardian Illustrated is a creative workflow that's been developed using the FloWr system.
+The system creates novel combinations of words and images by:
+
+- Selecting a set of articles from a Guardian corpus
+- Sorting them by sentiment, from most miserable to least
+- Selecting the most miserable articles
+- Extracting the key-phrases from that document.
+- Sorting them by sentiment, from most miserable to least
+- Selecting the most miserable key phrase from that document
+- Searching Flickr for images related to most miserable key phrase
+- Outputting an image with most miserable key-phrase overlaid.
+
+** Understanding FloWr's implementation of the Guardian Illustrated workflow
+
+Despite FloWr providing an apparently user-friendly graphical representation of the workflow I was porting understanding how data flowed through the system was a relatively laborious task. 
+
+It is not instantly apparent which outputs of modules' outputs' are connected to which inputs. 
+Whilst this information can be readily extracted from the textual representations of the workflows FloWr exposes known as scripts (see "Parsing FloWr workflows" section) understanding what data is flowing between ProcessNodes is a laborious process when working with graphical representations of the workflows and understanding which of the ProcessNode's parameters had been set to non-default values could not be seen without checking them one by one.
+
+*** What don't we see in FloWr representations
+
+The connections joining ProcessNode's in FloWr workflows provide data processing facilities and do not simply feed output from one step of the process to another.
+
+When ProcessNodes output lists of data rather than single values the system allows the user to select data from a particular index in that list. 
+Whilst such operations sound trivial they actually heavily impact the way the system operates but are not-represented in the high level overview of the system provided by FloWr.
+
+Inspired by more flexible graphical patching systems such as PureData/MaxMSP I decided not to give connections in the system such functionality.
+All values are passed between modules as if they were scalar irrespective of whether they're outputting a collection of values.
+This meant that the functionality of some of the modules I created whilst manually re-representing this workflow in Clojure do not map directly on to those ProcessNodes which inspired them.
+If automatic translation of FloWr workflows is to become a fruitful process connections that perform extractions from lists of data will likely need to be represented as a pair of connections flowing into a module whose sole purpose it is to select items from a list of values at a particular parameter at a particular instance.  
+
+** Porting individual ProcessNodes
+
+*** Guardian
+
+The Guardian ProcessNode available within the FloWr system returns sets of 100 articles from a corpus of Guardian articles based on a particular keyword provided as input.
+
+At time of development I was unable to source this corpus. 
+For this reason I wrapped the Guardian's web service endpoint and use that to source articles.
+
+This module is implemented as the function *guardian/search* in my system.
+
+**** An opportunity for re-representations
+
+Unlike the Guardian ProcessNode, which outputted lists of plain text strings containing Guardian articles, the web service returns blobs of data known as 'responses'.
+These in turn contain lists of 'results'.
+Each result contains information 
+

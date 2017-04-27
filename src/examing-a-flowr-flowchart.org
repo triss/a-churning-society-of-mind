@@ -2,6 +2,7 @@
 
 * Contents                                                         :toc_3_gh:
  - [[#236---guardian-illustrated][236 - Guardian Illustrated]]
+   - [[#porting-guardian-illustrated-to-clojure][Porting Guardian Illustrated to Clojure]]
    - [[#representations][Representations]]
    - [[#modules][Modules]]
      - [[#guardian][Guardian]]
@@ -11,6 +12,11 @@
 
 * 236 - Guardian Illustrated
    
+
+** Porting Guardian Illustrated to Clojure
+
+
+
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian_illustrated.cljc :noweb yes :mkdirp yes :padline no
   (ns a-churning-society-of-mind.guardian-illustrated
     (:require [a-churning-society-of-mind.guardian :as guardian]
@@ -18,42 +24,64 @@
               [a-churning-society-of-mind.flickr :as flickr]
               [a-churning-society-of-mind.core-nlp-sentiment :as sentiment]
               [a-churning-society-of-mind.text-rank :as text-rank]
-              [clojure.java.io :as io]))
+              [clojure.string :as str]
+              [clojure.java.io :as io]
+              [clojure.spec :as s]))
+
+  (defn pp
+    [x] (clojure.pprint/pprint x) x)
+
+  (defn choose
+    [coll] (when (seq coll) (rand-nth coll)))
 
   (defn guardian-illustrated
     [text]
     {:text  text
-     :photo (-> text flickr/search rand-nth flickr/get-photo)})
+     :photo (some-> text flickr/search pp choose flickr/get-photo)})
 
   (defn save
     [{:keys [text photo]}]
-    (with-open [out (io/output-stream (io/file (str text ".jpg")))]
-      (.write  out ^bytes (:body photo))))
+    (with-open [out (-> (str/replace text "/" " ")
+                        (str ".jpg")
+                        (io/file)
+                        (io/output-stream))]
+      (when (:body photo)
+        (.write out ^bytes (:body photo)))))
 
-  (->> (guardian/search "Trump")
+  (->> (guardian/search "Tristan")
        (map #(-> % guardian/result->body-html html/strip-tags))
        (sentiment/most-miserable-text)
        (text-rank/key-phrases)
-       (sentiment/most-miserable-text)
-       (guardian-illustrated)
-       (save))
+                                          ;(sentiment/most-miserable-text)
+       (mapv #(-> % guardian-illustrated save))
+       ;(save)
+       )
 #+END_SRC
 
 ** Representations
-
+   
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/specs.cljc :noweb yes :mkdirp yes :padline no
 
 #+END_SRC
 
 ** Modules
 *** Guardian
-Returns 100 articles from Guardian corpus.
 
-**** Web service wrapper
+Returns 100 articles from a Guardian corpus.
+At time of development I was unable to source the corpus used within FloWr.
+For this reason the Guardian's web service API is wrapped.
 
-We use the API described here: http://open-platform.theguardian.com/documentation/search
-To retrieve guardian articles.
-We could wrap much more of functionality. 
+**** Web service 
+
+Consuming the Guardian web services content is straightforward. 
+The API is restful, does not require complex authentication for much of its functionality and is well documented.
+The API described here: http://open-platform.theguardian.com/documentation/search
+Simply retrieving articles is simple, you set the following query parameters:
+- q :: the search being performed
+- fields :: set to 'body' such that article is retrieved.
+
+The rest of the API's functionality is accessed by setting further parameters.
+
 Is there an automated means of constructing query? No WSDL for Guardian service appears to be available online.
 
 #+BEGIN_SRC clojure :tangle ../babel/src/a_churning_society_of_mind/guardian.cljc :noweb yes :mkdirp yes :padline no
