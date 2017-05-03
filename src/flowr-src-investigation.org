@@ -1,0 +1,138 @@
+* FloWr Source code
+** Dependencies
+*** lib/core
+**** commons-codec-1.10.jar
+Apache Commons Codec (TM) software provides implementations of common encoders and decoders such as Base64, Hex, Phonetic and URLs.
+
+https://commons.apache.org/proper/commons-codec/
+
+**** commons-lang3-3.3.2.jar
+The standard Java libraries fail to provide enough methods for manipulation of its core classes. Apache Commons Lang provides these extra methods.
+
+Lang provides a host of helper utilities for the java.lang API, notably String manipulation methods, basic numerical methods, object reflection, concurrency, creation and serialization and System properties. Additionally it contains basic enhancements to java.util.Date and a series of utilities dedicated to help with building methods, such as hashCode, toString and equals.
+
+https://commons.apache.org/proper/commons-lang/
+
+**** commons-logging.jar
+The Logging package is an ultra-thin bridge between different logging implementations. A library that uses the commons-logging API can be used with any logging implementation at runtime. 
+https://commons.apache.org/proper/commons-logging/
+
+**** guava-18.0.jar
+Guava is a set of core libraries that includes new collection types (such as multimap and multiset), immutable collections, a graph library, functional types, an in-memory cache, and APIs/utilities for concurrency, I/O, hashing, primitives, reflection, string processing, and much more!
+
+https://github.com/google/guava
+
+**** imgscalr-lib-4.2.jar
+mgscalr - Java Image-Scaling Library
+https://github.com/rkalla/imgscalr
+
+Updated 8 months ago
+
+**** mysql-connector-java-5.1.27
+https://dev.mysql.com/downloads/connector/j/
+
+**** object-explorer.jar
+Debugging utility from YourKit     
+
+https://www.yourkit.com/docs/java/help/objects_view_explorer.jsp
+
+*** node_dependencies
+**** RiTaWN.jar
+RitaWN, by Daniel Howe, provides simple access to the WordNet ontology, wraps Jawbone/JWNL functionality for Java/Processing, provides distance metrics between ontology terms, assigns unique IDs for each word sense/pos, supports version 2.x-3.0 across platforms, and support for both applications and applet.
+***** Unsupported?
+Only mentioned on http://wordnet.princeton.edu/wordnet/related-projects/      
+
+***** No code available
+
+**** SentiStrength.jar
+http://sentistrength.wlv.ac.uk/#Java
+
+**** commons-math-1.2.jar
+Apache math functions
+
+**** core.jar
+Processing
+
+**** Apache Lucence - disco-1.4.jar
+This is called Apache lucence according to jar -tf?
+
+ text search engine library written entirely in Java. It is a technology suitable for nearly any application that requires full-text search, especially cross-platform.
+***** Why is this called disco? where did it come from?
+**** flickrapi-1.2.jar
+
+Flickr API
+https://lucene.apache.org/core/index.html
+
+**** fst-1.36-onejar.jar
+Fast serialisation
+https://ruedigermoeller.github.io/fast-serialization/
+
+**** gson-2.3.jar
+Gson is a Java library that can be used to convert Java Objects into their JSON representation. It can also be used to convert a JSON string to an equivalent Java object. Gson can work with arbitrary Java objects including pre-existing objects that you do not have source-code of.
+
+https://github.com/google/gson
+**** jaxen-1.1.1.jar
+Jaxen is an open source XPath library written in Java. It is adaptable to many different object models, including DOM, XOM, dom4j, and JDOM. Is it also possible to write adapters that treat non-XML trees such as compiled Java byte code or Java beans as XML, thus enabling you to query these trees with XPath too.
+http://www.jaxen.org/
+**** jazzy-core.jar
+J A Z Z Y : Java Spell Checker
+https://github.com/reckart/jazzy
+
+
+**** jdom-1.1.jar
+ 	
+We want to provide a solution for using XML from Java that is as simple as Java itself.
+
+http://www.jdom.org/mission/index.html
+
+**** jericho-html-3.2.jar
+Jericho HTML Parser is a java library allowing analysis and manipulation of parts of an HTML document,      
+http://jericho.htmlparser.net/docs/index.html
+
+**** jsoup-1.7.3.jar
+soup is an open-source Java library of methods designed to extract and manipulate data stored in HTML documents.
+
+http://jsoup.org
+
+
+**** jwnl.jar
+JWNL is a Java API for accessing the WordNet relational dictionary. WordNet is widely used for developing NLP applications, and a Java API such as JWNL will allow developers to more easily use Java for building NLP applications.
+https://sourceforge.net/projects/jwordnet/
+
+**** jython-2.7-b2.jar
+Jython is an implementation of the Python programming language designed to run on the Java platform. It is the successor of JPython.[3]
+http://www.jython.org/
+**** log4j-1.2.17.jar
+Apache Log4j 2     
+
+https://logging.apache.org/log4j/2.x/
+**** maxent-2.4.0.jar
+Maximum entropy open-nlp.
+"Don't assume anything about your probability distribution other than what you have observed." 
+http://maxent.sourceforge.net/about.html
+**** opennlp-tools-1.3.0.jar
+The Apache OpenNLP library is a machine learning based toolkit for the processing of natural language text.
+
+https://opennlp.apache.org/
+**** porterstemmer.jar
+Stemmer - built with Porter Stemmer language?     
+
+https://github.com/snowballstem/snowball/tree/master/java/org/tartarus/snowball/
+**** sptoolkit.jar
+
+sptoolkit
+
+     Part of Text Rank implementation
+https://github.com/ceteri/textrank/commit/b346d95c25d5fe0c7b377f05d2c178de35979a3d
+**** stanford-corenlp-2011-12-22.jar
+https://stanfordnlp.github.io/CoreNLP/
+
+
+**** trove-2.0.2.jar
+     Fast datatypes.
+Good for wotking with primitives.
+
+http://trove.starlight-systems.com/
+**** twitter4j-core-3.0.5.jar
+Twitter4J is a Twitter API binding library for the Java language licensed under Apache License 2.0.
+https://github.com/yusuke/twitter4j
