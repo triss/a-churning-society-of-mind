@@ -32,7 +32,7 @@ The connections joining ProcessNode's in FloWr workflows provide data processing
 When ProcessNodes output lists of data rather than single values the system allows the user to select data from a particular index in that list. 
 Whilst such operations sound trivial they actually heavily impact the way the system operates but are not-represented in the high level overview of the system provided by FloWr.
 
-Inspired by more flexible graphical patching systems such as PureData/MaxMSP I decided not to give connections in the system such functionality.
+Inspired by more flexible graphical patching systems I decided not to give connections in the system such functionality.
 All values are passed between modules as if they were scalar irrespective of whether they're outputting a collection of values.
 This meant that the functionality of some of the modules I created whilst manually re-representing this workflow in Clojure do not map directly on to those ProcessNodes which inspired them.
 If automatic translation of FloWr workflows is to become a fruitful process connections that perform extractions from lists of data will likely need to be represented as a pair of connections flowing into a module whose sole purpose it is to select items from a list of values at a particular parameter at a particular instance.  
